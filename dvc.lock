@@ -12,9 +12,9 @@ stages:
     outs:
     - path: data/raw/weather_tx_asos
       hash: md5
-      md5: 0556dccb4237da07d619df1c2cef3f44.dir
-      size: 3037908912
-      nfiles: 135
+      md5: 00b6a836fb121286c019aab3c956105c.dir
+      size: 3250750373
+      nfiles: 144
   extract_ercot_backcast:
     cmd: cd data/interim/ercot_backcast && ../../../.venv/bin/python 
       ../../../scripts/extract_ercot_backcast.py
