@@ -1,6 +1,6 @@
 # ERCOT Load and Weather Forecasting
 
-A portfolio-ready project for ERCOT load forecasting with weather and geography
+Project for ERCOT load forecasting with weather and geography
 data lineage. The current focus is building a reproducible data architecture
 from public ERCOT, ASOS, and Census sources before fitting forecasting models.
 
@@ -40,7 +40,6 @@ bayes_demand_fcst/
 │   ├── processed/
 │   └── raw/
 ├── notebooks/
-│   └── 01_exploratory_data_analysis.ipynb
 ├── models/
 │   └── .gitkeep
 ├── reports/
