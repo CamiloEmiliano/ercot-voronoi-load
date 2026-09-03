@@ -1,0 +1,28 @@
+stages:
+  download_weather:
+    cmd: mkdir -p data/raw/weather_tx_asos && cd data/raw/weather_tx_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather.py 
+      --execute
+    deps:
+    - scripts/download_asos_weather.py
+    outs:
+    - data/raw/weather_tx_asos
+  extract_ercot_backcast:
+    cmd: cd data/interim/ercot_backcast && ../../../.venv/bin/python 
+      ../../../scripts/extract_ercot_backcast.py
+    deps:
+    - data/raw/ercot_backcast
+    - scripts/extract_ercot_backcast.py
+    outs:
+    - data/interim/ercot_backcast
+  extract_texas_counties:
+    cmd: .venv/bin/python scripts/extract_texas_counties.py
+    deps:
+    - data/raw/texas_counties/tl_2025_us_county.shp
+    - data/raw/texas_counties/tl_2025_us_county.shx
+    - data/raw/texas_counties/tl_2025_us_county.dbf
+    - data/raw/texas_counties/tl_2025_us_county.prj
+    - data/raw/texas_counties/tl_2025_us_county.cpg
+    - scripts/extract_texas_counties.py
+    outs:
+    - data/interim/texas_counties

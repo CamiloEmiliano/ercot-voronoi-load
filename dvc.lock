@@ -1,0 +1,74 @@
+schema: '2.0'
+stages:
+  download_weather:
+    cmd: mkdir -p data/raw/weather_tx_asos && cd data/raw/weather_tx_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather.py 
+      --execute
+    deps:
+    - path: scripts/download_asos_weather.py
+      hash: md5
+      md5: 599e617e2adb2aabe14a8b5a7586e983
+      size: 6104
+    outs:
+    - path: data/raw/weather_tx_asos
+      hash: md5
+      md5: 0556dccb4237da07d619df1c2cef3f44.dir
+      size: 3037908912
+      nfiles: 135
+  extract_ercot_backcast:
+    cmd: cd data/interim/ercot_backcast && ../../../.venv/bin/python 
+      ../../../scripts/extract_ercot_backcast.py
+    deps:
+    - path: data/raw/ercot_backcast
+      hash: md5
+      md5: acd3993631bc619b512ff97540bf1c89.dir
+      size: 584334748
+      nfiles: 11
+    - path: scripts/extract_ercot_backcast.py
+      hash: md5
+      md5: 31ce43d42aa77cb61784e1d93d90ac93
+      size: 6717
+    outs:
+    - path: data/interim/ercot_backcast
+      hash: md5
+      md5: 8724e54f18dbd2b7933e93b8d7cfb33b.dir
+      size: 159686326
+      nfiles: 108
+  extract_texas_counties:
+    cmd: .venv/bin/python scripts/extract_texas_counties.py
+    deps:
+    - path: data/raw/texas_counties/tl_2025_us_county.cpg
+      hash: md5
+      md5: ae3b3df9970b49b6523e608759bc957d
+      size: 5
+      isexec: true
+    - path: data/raw/texas_counties/tl_2025_us_county.dbf
+      hash: md5
+      md5: ae542bb38d4900c5f22828f8ff37fe7a
+      size: 993755
+      isexec: true
+    - path: data/raw/texas_counties/tl_2025_us_county.prj
+      hash: md5
+      md5: 48695f70b8a1e68eceb09955b39bb489
+      size: 165
+      isexec: true
+    - path: data/raw/texas_counties/tl_2025_us_county.shp
+      hash: md5
+      md5: 8fb6f42550a1f7bea496721dab9c2137
+      size: 132270192
+      isexec: true
+    - path: data/raw/texas_counties/tl_2025_us_county.shx
+      hash: md5
+      md5: 09b9f1acb394a85e9d25884424dc0b1c
+      size: 25980
+      isexec: true
+    - path: scripts/extract_texas_counties.py
+      hash: md5
+      md5: af7118cbd990a434b25da33922fb96b4
+      size: 2486
+    outs:
+    - path: data/interim/texas_counties
+      hash: md5
+      md5: dedb587972275d35f82f8392ad5ba7aa.dir
+      size: 47949244
+      nfiles: 1
