@@ -15,14 +15,13 @@ stages:
     - scripts/extract_ercot_backcast.py
     outs:
     - data/interim/ercot_backcast
-  extract_texas_counties:
-    cmd: .venv/bin/python scripts/extract_texas_counties.py
+  extract_ercot_map:
+    cmd: cd data/interim/ercot_map && ../../../.venv/bin/python ../../../scripts/extract_ercot_map.py
     deps:
-    - data/raw/texas_counties/tl_2025_us_county.shp
-    - data/raw/texas_counties/tl_2025_us_county.shx
-    - data/raw/texas_counties/tl_2025_us_county.dbf
-    - data/raw/texas_counties/tl_2025_us_county.prj
-    - data/raw/texas_counties/tl_2025_us_county.cpg
-    - scripts/extract_texas_counties.py
+    - data/raw/ercot_map/eGRID2023_Subregions.shp
+    - data/raw/ercot_map/eGRID2023_Subregions.shx
+    - data/raw/ercot_map/eGRID2023_Subregions.dbf
+    - data/raw/ercot_map/eGRID2023_Subregions.prj
+    - scripts/extract_ercot_map.py
     outs:
-    - data/interim/texas_counties
+    - data/interim/ercot_map/ercot_boundary.geojson

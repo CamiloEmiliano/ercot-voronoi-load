@@ -10,6 +10,9 @@ data/external/*
 !data/interim/
 data/interim/*
 !data/interim/.gitkeep
+!data/interim/ercot_map/
+data/interim/ercot_map/*
+!data/interim/ercot_map/.gitkeep
 !data/processed/
 data/processed/*
 !data/processed/.gitkeep
@@ -17,9 +20,10 @@ data/processed/*
 data/raw/*
 !data/raw/.gitignore
 !data/raw/.gitkeep
-!data/raw/texas_counties/
-data/raw/texas_counties/*
-!data/raw/texas_counties/*.dvc
+!data/raw/ercot_map/
+data/raw/ercot_map/*
+!data/raw/ercot_map/.gitkeep
+!data/raw/ercot_map/*.dvc
 .env
 .env.swp
 *.swp

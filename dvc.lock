@@ -34,41 +34,32 @@ stages:
       md5: 8724e54f18dbd2b7933e93b8d7cfb33b.dir
       size: 159686326
       nfiles: 108
-  extract_texas_counties:
-    cmd: .venv/bin/python scripts/extract_texas_counties.py
+  extract_ercot_map:
+    cmd: cd data/interim/ercot_map && ../../../.venv/bin/python 
+      ../../../scripts/extract_ercot_map.py
     deps:
-    - path: data/raw/texas_counties/tl_2025_us_county.cpg
+    - path: data/raw/ercot_map/eGRID2023_Subregions.dbf
       hash: md5
-      md5: ae3b3df9970b49b6523e608759bc957d
-      size: 5
-      isexec: true
-    - path: data/raw/texas_counties/tl_2025_us_county.dbf
+      md5: 9a01b21e57d6d30f74be124a820256b8
+      size: 8041
+    - path: data/raw/ercot_map/eGRID2023_Subregions.prj
       hash: md5
-      md5: ae542bb38d4900c5f22828f8ff37fe7a
-      size: 993755
-      isexec: true
-    - path: data/raw/texas_counties/tl_2025_us_county.prj
+      md5: c742bee3d4edfc2948a2ad08de1790a5
+      size: 145
+    - path: data/raw/ercot_map/eGRID2023_Subregions.shp
       hash: md5
-      md5: 48695f70b8a1e68eceb09955b39bb489
-      size: 165
-      isexec: true
-    - path: data/raw/texas_counties/tl_2025_us_county.shp
+      md5: 3b83dbf02525f145a8ec6bebdded4d5f
+      size: 83146184
+    - path: data/raw/ercot_map/eGRID2023_Subregions.shx
       hash: md5
-      md5: 8fb6f42550a1f7bea496721dab9c2137
-      size: 132270192
-      isexec: true
-    - path: data/raw/texas_counties/tl_2025_us_county.shx
+      md5: 7ffa33eb49a37b408b9b90962e35f9d3
+      size: 316
+    - path: scripts/extract_ercot_map.py
       hash: md5
-      md5: 09b9f1acb394a85e9d25884424dc0b1c
-      size: 25980
-      isexec: true
-    - path: scripts/extract_texas_counties.py
-      hash: md5
-      md5: af7118cbd990a434b25da33922fb96b4
-      size: 2486
+      md5: 041fab676ca5f3c0003b62ac0e18f620
+      size: 3169
     outs:
-    - path: data/interim/texas_counties
+    - path: data/interim/ercot_map/ercot_boundary.geojson
       hash: md5
-      md5: dedb587972275d35f82f8392ad5ba7aa.dir
-      size: 47949244
-      nfiles: 1
+      md5: 54ce6b150e0fecab6cdcf4a24b5f7d50
+      size: 33419754
