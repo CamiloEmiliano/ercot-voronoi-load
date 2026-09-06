@@ -45,11 +45,11 @@ bayes_demand_fcst/
 ├── reports/
 │   └── figures/
 ├── scripts/
-│   ├── download_asos_weather.py
+│   ├── download_asos_weather_tx.py
 │   ├── extract_ercot_backcast.py
 │   └── extract_texas_counties.py
 └── tests/
-    ├── test_download_asos_weather.py
+    ├── test_download_asos_weather_tx.py
     ├── test_extract_ercot_backcast.py
     └── test_extract_texas_counties.py
 ```
@@ -79,15 +79,15 @@ report forecast uncertainty rather than point forecasts alone.
 
 ## Download Texas ASOS weather data
 
-`scripts/download_asos_weather.py` downloads the selected 170 active, land-based
+`scripts/download_asos_weather_tx.py` downloads the selected 170 active, land-based
 Texas ASOS stations with records beginning no later than 2010. It requests only
 load-relevant numeric weather fields, saves raw CSV responses unchanged in the
 directory where it is invoked, skips files already present, and defaults to dry-run mode.
 
 ```bash
 cd data/raw/weather
-python ../../../scripts/download_asos_weather.py
-python ../../../scripts/download_asos_weather.py --execute
+python ../../../scripts/download_asos_weather_tx.py
+python ../../../scripts/download_asos_weather_tx.py --execute
 ```
 
 The default download spans 2014 through 2025, one month per request. The script
@@ -151,7 +151,7 @@ The pipeline declared in `dvc.yaml` currently contains:
 
 ```text
 download_weather
-    scripts/download_asos_weather.py
+    scripts/download_asos_weather_tx.py
         -> data/raw/weather_tx_asos/
 
 extract_ercot_backcast

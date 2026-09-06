@@ -2,10 +2,10 @@ schema: '2.0'
 stages:
   download_weather:
     cmd: mkdir -p data/raw/weather_tx_asos && cd data/raw/weather_tx_asos && 
-      ../../../.venv/bin/python ../../../scripts/download_asos_weather.py 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_tx.py 
       --execute
     deps:
-    - path: scripts/download_asos_weather.py
+    - path: scripts/download_asos_weather_tx.py
       hash: md5
       md5: 599e617e2adb2aabe14a8b5a7586e983
       size: 6104

@@ -1,12 +1,44 @@
 stages:
   download_weather:
     cmd: mkdir -p data/raw/weather_tx_asos && cd data/raw/weather_tx_asos && 
-      ../../../.venv/bin/python ../../../scripts/download_asos_weather.py 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_tx.py 
       --execute
     deps:
-    - scripts/download_asos_weather.py
+    - scripts/download_asos_weather_tx.py
     outs:
     - data/raw/weather_tx_asos
+  download_weather_nm:
+    cmd: mkdir -p data/raw/weather_nm_asos && cd data/raw/weather_nm_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_nm.py 
+      --execute
+    deps:
+    - scripts/download_asos_weather_nm.py
+    outs:
+    - data/raw/weather_nm_asos
+  download_weather_ok:
+    cmd: mkdir -p data/raw/weather_ok_asos && cd data/raw/weather_ok_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_ok.py 
+      --execute
+    deps:
+    - scripts/download_asos_weather_ok.py
+    outs:
+    - data/raw/weather_ok_asos
+  download_weather_ar:
+    cmd: mkdir -p data/raw/weather_ar_asos && cd data/raw/weather_ar_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_ar.py 
+      --execute
+    deps:
+    - scripts/download_asos_weather_ar.py
+    outs:
+    - data/raw/weather_ar_asos
+  download_weather_la:
+    cmd: mkdir -p data/raw/weather_la_asos && cd data/raw/weather_la_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_la.py 
+      --execute
+    deps:
+    - scripts/download_asos_weather_la.py
+    outs:
+    - data/raw/weather_la_asos
   extract_ercot_backcast:
     cmd: cd data/interim/ercot_backcast && ../../../.venv/bin/python 
       ../../../scripts/extract_ercot_backcast.py
