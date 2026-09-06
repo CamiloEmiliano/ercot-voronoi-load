@@ -150,7 +150,7 @@ datasets remain local because of their size and external availability.
 The pipeline declared in `dvc.yaml` currently contains:
 
 ```text
-download_weather
+download_weather_tx
     scripts/download_asos_weather_tx.py
         -> data/raw/weather_tx_asos/
 

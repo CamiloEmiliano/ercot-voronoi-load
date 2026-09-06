@@ -1,5 +1,5 @@
 stages:
-  download_weather:
+  download_weather_tx:
     cmd: mkdir -p data/raw/weather_tx_asos && cd data/raw/weather_tx_asos && 
       ../../../.venv/bin/python ../../../scripts/download_asos_weather_tx.py 
       --execute
