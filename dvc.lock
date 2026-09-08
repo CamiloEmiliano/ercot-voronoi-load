@@ -123,3 +123,42 @@ stages:
       md5: ce71f6fd815495112acdb79259c9e87b.dir
       size: 574715872
       nfiles: 144
+  build_station_metadata:
+    cmd: mkdir -p data/interim/station_metadata && cd 
+      data/interim/station_metadata && ../../../.venv/bin/python 
+      ../../../scripts/build_station_metadata.py
+    deps:
+    - path: data/raw/weather_ar_asos
+      hash: md5
+      md5: f70f5220ea126066e198b1e7c6326352.dir
+      size: 479426683
+      nfiles: 144
+    - path: data/raw/weather_la_asos
+      hash: md5
+      md5: ce71f6fd815495112acdb79259c9e87b.dir
+      size: 574715872
+      nfiles: 144
+    - path: data/raw/weather_nm_asos
+      hash: md5
+      md5: 8c3cf14d786ee056ece7f80f58e2a877.dir
+      size: 520313694
+      nfiles: 144
+    - path: data/raw/weather_ok_asos
+      hash: md5
+      md5: 97252005b099160ed3a4a8446212aa00.dir
+      size: 1018249358
+      nfiles: 144
+    - path: data/raw/weather_tx_asos
+      hash: md5
+      md5: 00b6a836fb121286c019aab3c956105c.dir
+      size: 3250750373
+      nfiles: 144
+    - path: scripts/build_station_metadata.py
+      hash: md5
+      md5: 9f5fd747e19a6d50880153ce77bf395c
+      size: 4380
+    outs:
+    - path: data/interim/station_metadata/station_metadata.parquet
+      hash: md5
+      md5: 27578c761551bf733e155d83734a11e9
+      size: 15010
