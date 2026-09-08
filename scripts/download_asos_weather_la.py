@@ -20,7 +20,7 @@ DOWNLOAD_CHUNK_BYTES = 1024 * 1024
 WEATHER_COLUMNS = (
     "tmpf", "dwpf",  "relh",
     "feel", "skyc1", "skyl1",
-    "p01i", "mslp",  "vsby"
+    "p01i", "mslp",  "alti", "vsby"
 )
 
 # Active land stations whose IEM archive begins on or before 2010-12-31.
