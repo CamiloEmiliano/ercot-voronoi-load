@@ -2,7 +2,7 @@
 
 Project for ERCOT load forecasting with weather and geography
 data lineage. The current focus is building a reproducible data architecture
-from public ERCOT, ASOS, and Census sources before fitting forecasting models.
+from public ERCOT, ASOS, and EPA eGRID sources before fitting forecasting models.
 
 ## Project goal
 
@@ -25,7 +25,7 @@ weather-sensitive, and dependent on careful treatment of source data contracts.
 ## Data
 
 Large source and generated datasets are kept out of Git. DVC tracks the current
-pipeline state and the manually downloaded county ZIP pointer.
+pipeline state and local raw-data artifacts.
 
 ## Project structure
 
@@ -37,21 +37,35 @@ bayes_demand_fcst/
 ├── data/
 │   ├── external/
 │   ├── interim/
+│   │   ├── ercot_backcast/
+│   │   └── ercot_map/
 │   ├── processed/
 │   └── raw/
+│       ├── ercot_backcast/
+│       ├── ercot_map/
+│       └── weather_{tx,nm,ok,ar,la}_asos/
+├── literature/
 ├── notebooks/
 ├── models/
 │   └── .gitkeep
 ├── reports/
 │   └── figures/
 ├── scripts/
+│   ├── download_asos_weather_ar.py
+│   ├── download_asos_weather_la.py
+│   ├── download_asos_weather_nm.py
+│   ├── download_asos_weather_ok.py
 │   ├── download_asos_weather_tx.py
 │   ├── extract_ercot_backcast.py
-│   └── extract_texas_counties.py
+│   └── extract_ercot_map.py
 └── tests/
+    ├── test_download_asos_weather_ar.py
+    ├── test_download_asos_weather_la.py
+    ├── test_download_asos_weather_nm.py
+    ├── test_download_asos_weather_ok.py
     ├── test_download_asos_weather_tx.py
     ├── test_extract_ercot_backcast.py
-    └── test_extract_texas_counties.py
+    └── test_extract_ercot_map.py
 ```
 
 ## Quick start
@@ -70,11 +84,11 @@ The forecasting model will be added after the real data contracts are stable.
 The intended model layer will use ERCOT load with weather covariates and will
 report forecast uncertainty rather than point forecasts alone.
 
-## Expected outputs
+## Current data products
 
-- raw ASOS monthly CSV files in `data/raw/weather_tx_asos/`
+- raw ASOS monthly CSV files in `data/raw/weather_{tx,nm,ok,ar,la}_asos/`
 - interim ERCOT load Parquet files in `data/interim/ercot_backcast/`
-- interim Texas county GeoJSON in `data/interim/texas_counties/`
+- interim ERCOT eGRID boundary GeoJSON in `data/interim/ercot_map/`
 - future processed modeling panels in `data/processed/`
 
 ## Download Texas ASOS weather data
@@ -124,21 +138,21 @@ data/interim/ercot_backcast/2018/m12.parquet
 
 Existing files are skipped. Use `--overwrite` to replace them.
 
-## Extract Texas county boundaries
+## Extract ERCOT boundary
 
-`scripts/extract_texas_counties.py` reads the unzipped 2025 Census TIGER/Line
-county shapefile in `data/raw/texas_counties/`, filters to Texas records using
-`STATEFP == "48"`, and writes a GeoJSON boundary layer for downstream spatial
-joins and EDA.
+`scripts/extract_ercot_map.py` reads the eGRID 2023 Subregions shapefile bundle
+in `data/raw/ercot_map/`, filters the `Subregion == "ERCT"` feature, and writes
+the ERCOT boundary GeoJSON. Run it from the desired interim output directory.
 
 ```bash
-.venv/bin/python scripts/extract_texas_counties.py
+cd data/interim/ercot_map
+../../../.venv/bin/python ../../../scripts/extract_ercot_map.py
 ```
 
 The output is:
 
 ```text
-data/interim/texas_counties/texas_counties.geojson
+data/interim/ercot_map/ercot_boundary.geojson
 ```
 
 ## Data versioning
@@ -154,14 +168,18 @@ download_weather_tx
     scripts/download_asos_weather_tx.py
         -> data/raw/weather_tx_asos/
 
+download_weather_{nm,ok,ar,la}
+    scripts/download_asos_weather_{nm,ok,ar,la}.py
+        -> data/raw/weather_{nm,ok,ar,la}_asos/
+
 extract_ercot_backcast
     data/raw/ercot_backcast/ + scripts/extract_ercot_backcast.py
         -> data/interim/ercot_backcast/
 
-extract_texas_counties
-    data/raw/texas_counties/tl_2025_us_county.{shp,shx,dbf,prj,cpg}
-    + scripts/extract_texas_counties.py
-        -> data/interim/texas_counties/
+extract_ercot_map
+    data/raw/ercot_map/eGRID2023_Subregions.{shp,shx,dbf,prj}
+    + scripts/extract_ercot_map.py
+        -> data/interim/ercot_map/ercot_boundary.geojson
 ```
 
 Inspect the data lineage and local artifact status with:
