@@ -63,3 +63,63 @@ stages:
       hash: md5
       md5: 54ce6b150e0fecab6cdcf4a24b5f7d50
       size: 33419754
+  download_weather_nm:
+    cmd: mkdir -p data/raw/weather_nm_asos && cd data/raw/weather_nm_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_nm.py 
+      --execute
+    deps:
+    - path: scripts/download_asos_weather_nm.py
+      hash: md5
+      md5: 05b956e980d0558be857118d2e6299eb
+      size: 5087
+    outs:
+    - path: data/raw/weather_nm_asos
+      hash: md5
+      md5: 8c3cf14d786ee056ece7f80f58e2a877.dir
+      size: 520313694
+      nfiles: 144
+  download_weather_ok:
+    cmd: mkdir -p data/raw/weather_ok_asos && cd data/raw/weather_ok_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_ok.py 
+      --execute
+    deps:
+    - path: scripts/download_asos_weather_ok.py
+      hash: md5
+      md5: ec5949ef36ee2a0aa2166e8bbec584a6
+      size: 5238
+    outs:
+    - path: data/raw/weather_ok_asos
+      hash: md5
+      md5: 97252005b099160ed3a4a8446212aa00.dir
+      size: 1018249358
+      nfiles: 144
+  download_weather_ar:
+    cmd: mkdir -p data/raw/weather_ar_asos && cd data/raw/weather_ar_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_ar.py 
+      --execute
+    deps:
+    - path: scripts/download_asos_weather_ar.py
+      hash: md5
+      md5: bf4ff7e54d99ad27b106038ee42b6120
+      size: 5104
+    outs:
+    - path: data/raw/weather_ar_asos
+      hash: md5
+      md5: f70f5220ea126066e198b1e7c6326352.dir
+      size: 479426683
+      nfiles: 144
+  download_weather_la:
+    cmd: mkdir -p data/raw/weather_la_asos && cd data/raw/weather_la_asos && 
+      ../../../.venv/bin/python ../../../scripts/download_asos_weather_la.py 
+      --execute
+    deps:
+    - path: scripts/download_asos_weather_la.py
+      hash: md5
+      md5: 9f4f333304273f7988a4d2d3a46ddfb1
+      size: 5176
+    outs:
+    - path: data/raw/weather_la_asos
+      hash: md5
+      md5: ce71f6fd815495112acdb79259c9e87b.dir
+      size: 574715872
+      nfiles: 144
