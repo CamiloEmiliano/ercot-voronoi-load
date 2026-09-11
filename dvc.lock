@@ -7,14 +7,14 @@ stages:
     deps:
     - path: scripts/download_asos_weather_tx.py
       hash: md5
-      md5: 599e617e2adb2aabe14a8b5a7586e983
-      size: 6104
+      md5: ad715bb108f041f0cac2faabf8f5fcff
+      size: 6112
     outs:
     - path: data/raw/weather_tx_asos
       hash: md5
-      md5: 00b6a836fb121286c019aab3c956105c.dir
-      size: 3250750373
-      nfiles: 144
+      md5: c4f7d620e592f6b5dede0b90a3ab77c6.dir
+      size: 373715070
+      nfiles: 15
   extract_ercot_backcast:
     cmd: cd data/interim/ercot_backcast && ../../../.venv/bin/python 
       ../../../scripts/extract_ercot_backcast.py
@@ -70,13 +70,13 @@ stages:
     deps:
     - path: scripts/download_asos_weather_nm.py
       hash: md5
-      md5: 05b956e980d0558be857118d2e6299eb
-      size: 5087
+      md5: be1738c97161b77da3c4a20f94c22eda
+      size: 5095
     outs:
     - path: data/raw/weather_nm_asos
       hash: md5
-      md5: 8c3cf14d786ee056ece7f80f58e2a877.dir
-      size: 520313694
+      md5: d97fd0cdf03328ea613764bfaf64e4e2.dir
+      size: 556037602
       nfiles: 144
   download_weather_ok:
     cmd: mkdir -p data/raw/weather_ok_asos && cd data/raw/weather_ok_asos && 
@@ -85,13 +85,13 @@ stages:
     deps:
     - path: scripts/download_asos_weather_ok.py
       hash: md5
-      md5: ec5949ef36ee2a0aa2166e8bbec584a6
-      size: 5238
+      md5: 7996536f30aa9baadcb860e4c314309e
+      size: 5246
     outs:
     - path: data/raw/weather_ok_asos
       hash: md5
-      md5: 97252005b099160ed3a4a8446212aa00.dir
-      size: 1018249358
+      md5: 02023e8ba53d27aedc79fe700d3dc2ca.dir
+      size: 1086165628
       nfiles: 144
   download_weather_ar:
     cmd: mkdir -p data/raw/weather_ar_asos && cd data/raw/weather_ar_asos && 
@@ -100,13 +100,13 @@ stages:
     deps:
     - path: scripts/download_asos_weather_ar.py
       hash: md5
-      md5: bf4ff7e54d99ad27b106038ee42b6120
-      size: 5104
+      md5: d9cf6b41bbdb21fcb5a2ac76a43d9089
+      size: 5112
     outs:
     - path: data/raw/weather_ar_asos
       hash: md5
-      md5: f70f5220ea126066e198b1e7c6326352.dir
-      size: 479426683
+      md5: d146f90d2cc9e09f6b7ff736392abe67.dir
+      size: 508898639
       nfiles: 144
   download_weather_la:
     cmd: mkdir -p data/raw/weather_la_asos && cd data/raw/weather_la_asos && 
@@ -115,13 +115,13 @@ stages:
     deps:
     - path: scripts/download_asos_weather_la.py
       hash: md5
-      md5: 9f4f333304273f7988a4d2d3a46ddfb1
-      size: 5176
+      md5: f7f5f9fdcb5b94620b4a40101fe5bb5f
+      size: 5184
     outs:
     - path: data/raw/weather_la_asos
       hash: md5
-      md5: ce71f6fd815495112acdb79259c9e87b.dir
-      size: 574715872
+      md5: 3ed27f82795011eaa4302671e6572971.dir
+      size: 614209290
       nfiles: 144
   build_station_metadata:
     cmd: mkdir -p data/interim/station_metadata && cd 
