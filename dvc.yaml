@@ -68,3 +68,15 @@ stages:
     - scripts/build_station_metadata.py
     outs:
     - data/interim/station_metadata/station_metadata.parquet
+  normalize_asos_weather:
+    cmd: mkdir -p data/interim/weather_station_hourly && .venv/bin/python scripts/normalize_asos_weather.py --output data/interim/weather_station_hourly --overwrite
+    deps:
+    - data/raw/weather_tx_asos
+    - data/raw/weather_nm_asos
+    - data/raw/weather_ok_asos
+    - data/raw/weather_ar_asos
+    - data/raw/weather_la_asos
+    - scripts/normalize_asos_weather.py
+    - scripts/source_contracts.py
+    outs:
+    - data/interim/weather_station_hourly
