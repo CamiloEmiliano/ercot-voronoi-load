@@ -28,6 +28,9 @@ data/raw/ercot_map/*
 .env.swp
 *.swp
 
+# Graphify codebase analysis artifacts
+graphify-out/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
