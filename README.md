@@ -9,24 +9,6 @@ from public ERCOT, ASOS, and EPA eGRID sources before fitting forecasting models
 Create validated load, weather, and geography datasets that can support future
 probabilistic forecasts for ERCOT demand.
 
-## Why this project is strong for a portfolio
-
-- DVC records source-to-interim data lineage without committing large data files
-- Raw, interim, and processed data layers are separated explicitly
-- Source-specific quirks are preserved until validated processing decisions are made
-- The scripts are reproducible command-line entry points
-- The structure is realistic for energy analytics and forecasting work
-
-## Business framing
-
-This project mirrors an energy analytics workflow where load is seasonal,
-weather-sensitive, and dependent on careful treatment of source data contracts.
-
-## Data
-
-Large source and generated datasets are kept out of Git. DVC tracks the current
-pipeline state and local raw-data artifacts.
-
 ## Project structure
 
 ```text
