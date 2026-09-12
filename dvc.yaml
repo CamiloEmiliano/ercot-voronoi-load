@@ -88,3 +88,11 @@ stages:
     - scripts/source_contracts.py
     outs:
     - data/interim/load_profile_long
+  build_voronoi_weights:
+    cmd: .venv/bin/python scripts/build_voronoi_weights.py --stations data/interim/station_metadata/station_metadata.parquet --boundary data/interim/ercot_map/ercot_boundary.geojson --output data/interim/voronoi_weights/voronoi_weights.parquet
+    deps:
+    - data/interim/station_metadata/station_metadata.parquet
+    - data/interim/ercot_map/ercot_boundary.geojson
+    - scripts/build_voronoi_weights.py
+    outs:
+    - data/interim/voronoi_weights/voronoi_weights.parquet

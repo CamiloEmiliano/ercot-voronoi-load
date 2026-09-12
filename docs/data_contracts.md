@@ -86,3 +86,16 @@ This is intentionally not yet the canonical UTC load panel. The normalizer does
 not infer a 15-minute or hourly interval, attach a timezone, convert kWh to MW,
 or collapse profile rows into an ERCOT aggregate. Those operations require the
 source semantics to be verified first.
+
+## Phase 4 Voronoi Weights
+
+Phase 4 projects the WGS84 station coordinates and ERCT boundary to EPSG:3083
+in memory, constructs finite Voronoi cells, clips them to ERCT, and writes only
+the compact area-weight table under `data/interim/voronoi_weights/`.
+
+Coincident station coordinates are represented by one deterministic canonical
+station row with a comma-separated `station_aliases` field. This prevents
+duplicate points from invalidating the Voronoi diagram while preserving the
+station identity mapping for later weather aggregation. Station groups whose
+clipped cell does not intersect ERCT remain in the artifact with zero area and
+zero weight for auditability; they cannot contribute to the regional aggregate.

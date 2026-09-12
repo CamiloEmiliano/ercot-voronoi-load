@@ -198,6 +198,11 @@ cell_area_m2
 area_weight
 ```
 
+If multiple station IDs share exact coordinates, represent them as one
+canonical Voronoi point and preserve the aliases in the weight artifact. Keep
+zero-area station groups for auditability, but exclude their zero weights from
+later regional aggregation.
+
 Optionally persist one geometry artifact per structural configuration for audit
 and visualization. Do not re-tessellate because an individual weather value is
 missing. Recompute only when the active station configuration changes.
