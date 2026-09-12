@@ -156,6 +156,11 @@ Write the normalized load output to a separate interim location, such as:
 data/interim/load_hourly/
 ```
 
+The first implementation may safely produce a long-form profile panel under
+`data/interim/load_profile_long/` while preserving naive source timestamps and
+source interval values. It must not label those rows UTC or MW until the
+interval and unit semantics are verified.
+
 **Gate:** spring-forward and fall-back examples pass explicit timestamp tests,
 and the normalized load table has one documented row per intended interval.
 

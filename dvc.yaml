@@ -80,3 +80,11 @@ stages:
     - scripts/source_contracts.py
     outs:
     - data/interim/weather_station_hourly
+  normalize_ercot_load:
+    cmd: mkdir -p data/interim/load_profile_long && .venv/bin/python scripts/normalize_ercot_load.py --input data/interim/ercot_backcast --output data/interim/load_profile_long --overwrite
+    deps:
+    - data/interim/ercot_backcast
+    - scripts/normalize_ercot_load.py
+    - scripts/source_contracts.py
+    outs:
+    - data/interim/load_profile_long

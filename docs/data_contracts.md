@@ -73,3 +73,16 @@ These decisions are intentionally not guessed in Phase 1:
 
 Each deferred decision needs a fixture and a focused test before the relevant
 normalization stage is implemented.
+
+## Phase 3 Normalized Load Profile
+
+Phase 3 currently reshapes the wide extracted profiles into a long-form Parquet
+panel under `data/interim/load_profile_long/`. Each row retains the source
+profile identifier, the original `Date` and `ADDTIME` values as naive source
+timestamps, an `interval_number`, the original `interval_value_kwh_source`, and
+workbook/sheet/file provenance.
+
+This is intentionally not yet the canonical UTC load panel. The normalizer does
+not infer a 15-minute or hourly interval, attach a timezone, convert kWh to MW,
+or collapse profile rows into an ERCOT aggregate. Those operations require the
+source semantics to be verified first.
