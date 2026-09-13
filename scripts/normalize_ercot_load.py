@@ -11,9 +11,9 @@ from typing import Any
 import pandas as pd
 
 try:
-    from source_contracts import LOAD_INTERVAL_COLUMNS, validate_load_profile_frame
+    from source_contracts import LOAD_INTERVAL_COLUMNS, LOAD_SOURCE_INTERVAL_COLUMNS, validate_load_profile_frame
 except ModuleNotFoundError:
-    from scripts.source_contracts import LOAD_INTERVAL_COLUMNS, validate_load_profile_frame
+    from scripts.source_contracts import LOAD_INTERVAL_COLUMNS, LOAD_SOURCE_INTERVAL_COLUMNS, validate_load_profile_frame
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = PROJECT_ROOT / "data/interim/ercot_backcast"

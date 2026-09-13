@@ -27,7 +27,8 @@ ASOS_NUMERIC_COLUMNS = tuple(
     column for column in ASOS_REQUIRED_COLUMNS if column not in {"station", "valid", "skyc1", "skyl1"}
 )
 LOAD_PROFILE_COLUMNS = ("PType_WZ", "Date", "ADDTIME", "source_workbook", "source_sheet")
-LOAD_INTERVAL_COLUMNS = tuple(f"int_kWh{number}" for number in range(1, 101))
+LOAD_SOURCE_INTERVAL_COLUMNS = tuple(f"int_kWh{number}" for number in range(1, 101))
+LOAD_INTERVAL_COLUMNS = tuple(f"int_kWh{number}" for number in range(1, 97))
 
 
 def missing_columns(columns: Iterable[str], required: Iterable[str]) -> tuple[str, ...]:
@@ -45,7 +46,7 @@ def validate_asos_columns(columns: Iterable[str]) -> None:
 
 def validate_load_profile_columns(columns: Iterable[str]) -> None:
     """Require the current wide ERCOT backcast profile schema."""
-    required = (*LOAD_PROFILE_COLUMNS, *LOAD_INTERVAL_COLUMNS)
+    required = (*LOAD_PROFILE_COLUMNS, *LOAD_SOURCE_INTERVAL_COLUMNS)
     missing = missing_columns(columns, required)
     if missing:
         raise ValueError(f"ERCOT load profile schema is missing columns: {', '.join(missing)}")
@@ -72,5 +73,5 @@ def validate_load_profile_frame(frame: pd.DataFrame) -> None:
     validate_load_profile_columns(frame.columns)
     pd.to_datetime(frame["Date"], errors="raise")
     pd.to_datetime(frame["ADDTIME"], errors="raise")
-    for column in LOAD_INTERVAL_COLUMNS:
+    for column in LOAD_SOURCE_INTERVAL_COLUMNS:
         pd.to_numeric(frame[column], errors="raise")
