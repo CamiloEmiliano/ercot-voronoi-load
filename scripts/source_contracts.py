@@ -28,7 +28,9 @@ ASOS_NUMERIC_COLUMNS = tuple(
 )
 LOAD_PROFILE_COLUMNS = ("PType_WZ", "Date", "ADDTIME", "source_workbook", "source_sheet")
 LOAD_SOURCE_INTERVAL_COLUMNS = tuple(f"int_kWh{number}" for number in range(1, 101))
-LOAD_INTERVAL_COLUMNS = tuple(f"int_kWh{number}" for number in range(1, 97))
+LOAD_INTERVAL_COLUMNS = LOAD_SOURCE_INTERVAL_COLUMNS
+LOAD_INTERVAL_MINUTES = 15
+LOAD_SOURCE_UNIT = "kWh per 15-minute interval"
 
 
 def missing_columns(columns: Iterable[str], required: Iterable[str]) -> tuple[str, ...]:

@@ -161,14 +161,12 @@ The first implementation may safely produce a long-form profile panel under
 source interval values. It must not label those rows UTC or MW until the
 interval and unit semantics are verified.
 
-The current normalization policy uses `int_kWh1` through `int_kWh96` only.
-The rare values sometimes present in `int_kWh97` through `int_kWh100` remain
-available in the immutable raw workbooks and are validated as source columns,
-but are excluded from the normalized profile until their meaning is established.
-Treat these fields as a documented source anomaly: preserve their occurrence
-counts and source locations for audit, avoid inferring an ERCOT rule from naming
-alone, and revisit the exclusion only when external documentation or a stable
-date/interval pattern supports a tested interpretation.
+The normalized profile retains `int_kWh1` through `int_kWh100`. ERCOT's spring
+and fall DST examples establish that the occasional intervals 97-100 are real
+quarter-hour observations on fall-back days, not invalid source anomalies.
+Normal, spring-forward, and fall-back day cardinalities remain 96, 92, and 100
+intervals respectively. The local-time/DST mapping must still be tested before
+creating canonical UTC timestamps.
 
 **Gate:** spring-forward and fall-back examples pass explicit timestamp tests,
 and the normalized load table has one documented row per intended interval.

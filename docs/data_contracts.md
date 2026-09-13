@@ -51,19 +51,18 @@ Contract decisions:
 
 - `PType_WZ` is retained as the ERCOT profile/zone identifier.
 - `Date` and `ADDTIME` are parsed as datetimes but are not assumed to be UTC.
-- `int_kWh1` through `int_kWh100` are numeric profile columns. Their exact
-  interval duration, local-time convention, and relationship to the desired
-  ERCOT load target must be verified before the Phase 3 load normalization.
-- The normalized Phase 3 panel intentionally uses only `int_kWh1` through
-  `int_kWh96`. Values in `int_kWh97` through `int_kWh100` are retained in the
-  raw source and validated for schema completeness, but excluded from the
-  canonical profile because their rare occurrence is not sufficiently
-  documented to assign them statistical meaning.
-- This is a defensive data-quality policy, not a claim that the four columns
-  are invalid. ERCOT source conventions may change without a durable schema or
-  semantic notice, so undocumented exceptional values must not silently enter
-  the canonical load series. The policy is reversible if source documentation,
-  date patterns, and interval-level validation establish their meaning.
+- ERCOT’s historical backcast page describes these as 15-minute kWh values.
+  Therefore `int_kWh1` through `int_kWh96` are documented as 96 quarter-hour
+  energy intervals for the ordinary 24-hour profile.
+- The confirmed source unit is kWh per 15-minute interval. This is not yet the
+  same as an ERCOT-wide MW target; aggregation and any conversion to average
+  MW remain separate decisions.
+- ERCOT's DST examples establish that the occasional `int_kWh97` through
+  `int_kWh100` values are legitimate extra quarter-hour observations for a
+  fall-back transition. They are therefore retained in the normalized profile.
+- Normal days contain 96 quarter-hour intervals; spring-forward days contain
+  92; fall-back days contain 100. The normalized panel preserves the source
+  interval number and timestamps until the local-time/DST mapping is finalized.
 - `source_workbook` and `source_sheet` are provenance fields and must be
   preserved.
 - The monthly versus quarterly directory layout is an input partitioning

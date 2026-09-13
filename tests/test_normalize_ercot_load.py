@@ -35,9 +35,9 @@ def _wide_frame() -> pd.DataFrame:
 def test_normalize_profile_melts_intervals_and_preserves_source_time():
     normalized = normalize_ercot_load.normalize_profile(_wide_frame(), "2014/q1.parquet")
 
-    assert len(normalized) == 192
+    assert len(normalized) == 200
     assert normalized["interval_number"].min() == 1
-    assert normalized["interval_number"].max() == 96
+    assert normalized["interval_number"].max() == 100
     assert normalized["date_source_naive"].dt.tz is None
     assert normalized["addtime_source_naive"].dt.tz is None
     assert normalized["interval_value_kwh_source"].iloc[0] == 1.0
@@ -54,10 +54,12 @@ def test_normalize_load_writes_partitioned_long_output(tmp_path):
     report = normalize_ercot_load.normalize_load(tmp_path / "input", output_dir)
 
     output = pd.read_parquet(output_dir / "2024/q1.parquet")
-    assert len(output) == 192
+    assert len(output) == 200
     assert report["files_processed"] == 1
     assert report["rows_read"] == 2
-    assert report["rows_written"] == 192
+    assert report["rows_written"] == 200
+    assert report["interval_duration_minutes"] == 15
+    assert report["unit_semantics"] == "kWh per 15-minute interval"
     assert report["timestamp_semantics"].startswith("preserved")
     assert (output_dir / "quality_report.json").exists()
 
