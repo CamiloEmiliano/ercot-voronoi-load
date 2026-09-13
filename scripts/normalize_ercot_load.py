@@ -11,9 +11,21 @@ from typing import Any
 import pandas as pd
 
 try:
-    from source_contracts import LOAD_INTERVAL_COLUMNS, LOAD_SOURCE_INTERVAL_COLUMNS, validate_load_profile_frame
+    from source_contracts import (
+        LOAD_INTERVAL_COLUMNS,
+        LOAD_INTERVAL_MINUTES,
+        LOAD_SOURCE_INTERVAL_COLUMNS,
+        LOAD_SOURCE_UNIT,
+        validate_load_profile_frame,
+    )
 except ModuleNotFoundError:
-    from scripts.source_contracts import LOAD_INTERVAL_COLUMNS, LOAD_SOURCE_INTERVAL_COLUMNS, validate_load_profile_frame
+    from scripts.source_contracts import (
+        LOAD_INTERVAL_COLUMNS,
+        LOAD_INTERVAL_MINUTES,
+        LOAD_SOURCE_INTERVAL_COLUMNS,
+        LOAD_SOURCE_UNIT,
+        validate_load_profile_frame,
+    )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = PROJECT_ROOT / "data/interim/ercot_backcast"
@@ -75,7 +87,9 @@ def normalize_load(input_dir: Path, output_dir: Path, overwrite: bool = False) -
         "profile_rows_written": 0,
         "source_files": [],
         "timestamp_semantics": "preserved as naive source fields; UTC conversion intentionally deferred",
-        "unit_semantics": "preserved as interval_value_kwh_source; MW conversion intentionally deferred",
+        "interval_duration_minutes": LOAD_INTERVAL_MINUTES,
+        "unit_semantics": LOAD_SOURCE_UNIT,
+        "load_mw_conversion": "deferred until canonical timestamp and target aggregation are defined",
     }
     for path in paths:
         frame = pd.read_parquet(path)
