@@ -161,6 +161,11 @@ The first implementation may safely produce a long-form profile panel under
 source interval values. It must not label those rows UTC or MW until the
 interval and unit semantics are verified.
 
+The current normalization policy uses `int_kWh1` through `int_kWh96` only.
+The rare values sometimes present in `int_kWh97` through `int_kWh100` remain
+available in the immutable raw workbooks and are validated as source columns,
+but are excluded from the normalized profile until their meaning is established.
+
 **Gate:** spring-forward and fall-back examples pass explicit timestamp tests,
 and the normalized load table has one documented row per intended interval.
 
@@ -231,6 +236,10 @@ active_station_count
 weighted_station_count
 ```
 
+The first implementation writes variable-specific coverage columns in addition
+to the aggregate `weather_coverage`; this makes pressure, temperature, and
+precipitation coverage distinguishable during EDA.
+
 Keep `mslp` and `alti` separate in the station and regional panels. Any later
 pressure estimate or substitution must be an explicit, documented feature
 choice rather than an ingestion-side overwrite.
@@ -260,6 +269,11 @@ Write:
 ```text
 data/processed/ercot_hourly_panel/
 ```
+
+The assembly stage must consume a canonical `data/interim/load_hourly/` input
+with `timestamp_utc` and numeric `load_mw`; it must reject the provisional
+`load_profile_long/` artifact until Phase 3 resolves its interval, timezone,
+and unit semantics.
 
 Include observed or directly transformed fields such as:
 

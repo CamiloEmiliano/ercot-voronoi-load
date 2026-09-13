@@ -162,3 +162,26 @@ stages:
       hash: md5
       md5: 27578c761551bf733e155d83734a11e9
       size: 15010
+  build_voronoi_weights:
+    cmd: .venv/bin/python scripts/build_voronoi_weights.py --stations 
+      data/interim/station_metadata/station_metadata.parquet --boundary 
+      data/interim/ercot_map/ercot_boundary.geojson --output 
+      data/interim/voronoi_weights/voronoi_weights.parquet
+    deps:
+    - path: data/interim/ercot_map/ercot_boundary.geojson
+      hash: md5
+      md5: 54ce6b150e0fecab6cdcf4a24b5f7d50
+      size: 33419754
+    - path: data/interim/station_metadata/station_metadata.parquet
+      hash: md5
+      md5: 27578c761551bf733e155d83734a11e9
+      size: 15010
+    - path: scripts/build_voronoi_weights.py
+      hash: md5
+      md5: 3801733a4330d9c11f674001afc41da6
+      size: 7787
+    outs:
+    - path: data/interim/voronoi_weights/voronoi_weights.parquet
+      hash: md5
+      md5: 5248bf221a985158ac487ea53b7c069f
+      size: 10701

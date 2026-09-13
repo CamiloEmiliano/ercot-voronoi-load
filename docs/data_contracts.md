@@ -54,6 +54,11 @@ Contract decisions:
 - `int_kWh1` through `int_kWh100` are numeric profile columns. Their exact
   interval duration, local-time convention, and relationship to the desired
   ERCOT load target must be verified before the Phase 3 load normalization.
+- The normalized Phase 3 panel intentionally uses only `int_kWh1` through
+  `int_kWh96`. Values in `int_kWh97` through `int_kWh100` are retained in the
+  raw source and validated for schema completeness, but excluded from the
+  canonical profile because their rare occurrence is not sufficiently
+  documented to assign them statistical meaning.
 - `source_workbook` and `source_sheet` are provenance fields and must be
   preserved.
 - The monthly versus quarterly directory layout is an input partitioning
@@ -99,3 +104,30 @@ duplicate points from invalidating the Voronoi diagram while preserving the
 station identity mapping for later weather aggregation. Station groups whose
 clipped cell does not intersect ERCT remain in the artifact with zero area and
 zero weight for auditability; they cannot contribute to the regional aggregate.
+
+## Phase 5 Regional Weather
+
+Phase 5 reads each UTC year/month station-weather partition and joins station
+IDs to the canonical Voronoi weights, expanding aliases such as `CVB,T89`.
+For every variable, only nonmissing observations with positive area weight are
+included. The denominator is recomputed for that variable and timestamp, so
+available weights are renormalized without interpolation.
+
+The regional output contains one row per UTC timestamp and includes regional
+values, variable-specific coverage columns, `weather_coverage`,
+`active_station_count`, and `configuration_id`. A variable with zero available
+weight remains missing rather than being silently filled.
+
+## Phase 6 Observed Panel
+
+Phase 6 joins only canonical inputs: `data/interim/load_hourly/` must contain
+one row per `timestamp_utc` with a numeric `load_mw`, and
+`data/interim/weather_regional_hourly/` must contain one row per UTC timestamp.
+The assembler rejects naive timestamps, duplicate keys, and the earlier
+`load_profile_long` artifact because its source interval and unit semantics are
+not yet resolved.
+
+The resulting month-partitioned panel is written under
+`data/processed/ercot_hourly_panel/` with a quality report. It contains direct
+observations and transformations only; lags, rolling features, calendar
+encodings, and forecast targets remain in Phase 7.

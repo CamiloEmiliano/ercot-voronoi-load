@@ -96,3 +96,19 @@ stages:
     - scripts/build_voronoi_weights.py
     outs:
     - data/interim/voronoi_weights/voronoi_weights.parquet
+  aggregate_regional_weather:
+    cmd: .venv/bin/python scripts/aggregate_regional_weather.py --weather data/interim/weather_station_hourly --weights data/interim/voronoi_weights/voronoi_weights.parquet --output data/interim/weather_regional_hourly --overwrite
+    deps:
+    - data/interim/weather_station_hourly
+    - data/interim/voronoi_weights/voronoi_weights.parquet
+    - scripts/aggregate_regional_weather.py
+    outs:
+    - data/interim/weather_regional_hourly
+  assemble_observed_panel:
+    cmd: .venv/bin/python scripts/assemble_observed_panel.py --load data/interim/load_hourly --weather data/interim/weather_regional_hourly --output data/processed/ercot_hourly_panel --overwrite
+    deps:
+    - data/interim/load_hourly
+    - data/interim/weather_regional_hourly
+    - scripts/assemble_observed_panel.py
+    outs:
+    - data/processed/ercot_hourly_panel

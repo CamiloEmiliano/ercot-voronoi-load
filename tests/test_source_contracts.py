@@ -43,7 +43,7 @@ def _load_profile_frame() -> pd.DataFrame:
         "source_workbook": ["source.xlsx"],
         "source_sheet": ["Q1_2024"],
     }
-    frame.update({column: [1.0] for column in source_contracts.LOAD_INTERVAL_COLUMNS})
+    frame.update({column: [1.0] for column in source_contracts.LOAD_SOURCE_INTERVAL_COLUMNS})
     return pd.DataFrame(frame)
 
 
