@@ -165,6 +165,10 @@ The current normalization policy uses `int_kWh1` through `int_kWh96` only.
 The rare values sometimes present in `int_kWh97` through `int_kWh100` remain
 available in the immutable raw workbooks and are validated as source columns,
 but are excluded from the normalized profile until their meaning is established.
+Treat these fields as a documented source anomaly: preserve their occurrence
+counts and source locations for audit, avoid inferring an ERCOT rule from naming
+alone, and revisit the exclusion only when external documentation or a stable
+date/interval pattern supports a tested interpretation.
 
 **Gate:** spring-forward and fall-back examples pass explicit timestamp tests,
 and the normalized load table has one documented row per intended interval.

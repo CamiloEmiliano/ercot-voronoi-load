@@ -59,6 +59,11 @@ Contract decisions:
   raw source and validated for schema completeness, but excluded from the
   canonical profile because their rare occurrence is not sufficiently
   documented to assign them statistical meaning.
+- This is a defensive data-quality policy, not a claim that the four columns
+  are invalid. ERCOT source conventions may change without a durable schema or
+  semantic notice, so undocumented exceptional values must not silently enter
+  the canonical load series. The policy is reversible if source documentation,
+  date patterns, and interval-level validation establish their meaning.
 - `source_workbook` and `source_sheet` are provenance fields and must be
   preserved.
 - The monthly versus quarterly directory layout is an input partitioning
