@@ -15,25 +15,6 @@ stages:
       md5: c4f7d620e592f6b5dede0b90a3ab77c6.dir
       size: 373715070
       nfiles: 15
-  extract_ercot_backcast:
-    cmd: cd data/interim/ercot_backcast && ../../../.venv/bin/python 
-      ../../../scripts/extract_ercot_backcast.py
-    deps:
-    - path: data/raw/ercot_backcast
-      hash: md5
-      md5: acd3993631bc619b512ff97540bf1c89.dir
-      size: 584334748
-      nfiles: 11
-    - path: scripts/extract_ercot_backcast.py
-      hash: md5
-      md5: 31ce43d42aa77cb61784e1d93d90ac93
-      size: 6717
-    outs:
-    - path: data/interim/ercot_backcast
-      hash: md5
-      md5: 8724e54f18dbd2b7933e93b8d7cfb33b.dir
-      size: 159686326
-      nfiles: 108
   extract_ercot_map:
     cmd: cd data/interim/ercot_map && ../../../.venv/bin/python 
       ../../../scripts/extract_ercot_map.py

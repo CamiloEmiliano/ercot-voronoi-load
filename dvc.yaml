@@ -39,14 +39,6 @@ stages:
     - scripts/download_asos_weather_la.py
     outs:
     - data/raw/weather_la_asos
-  extract_ercot_backcast:
-    cmd: cd data/interim/ercot_backcast && ../../../.venv/bin/python 
-      ../../../scripts/extract_ercot_backcast.py
-    deps:
-    - data/raw/ercot_backcast
-    - scripts/extract_ercot_backcast.py
-    outs:
-    - data/interim/ercot_backcast
   extract_ercot_map:
     cmd: cd data/interim/ercot_map && ../../../.venv/bin/python ../../../scripts/extract_ercot_map.py
     deps:
@@ -80,14 +72,6 @@ stages:
     - scripts/source_contracts.py
     outs:
     - data/interim/weather_station_hourly
-  normalize_ercot_load:
-    cmd: mkdir -p data/interim/load_profile_long && .venv/bin/python scripts/normalize_ercot_load.py --input data/interim/ercot_backcast --output data/interim/load_profile_long --overwrite
-    deps:
-    - data/interim/ercot_backcast
-    - scripts/normalize_ercot_load.py
-    - scripts/source_contracts.py
-    outs:
-    - data/interim/load_profile_long
   build_voronoi_weights:
     cmd: .venv/bin/python scripts/build_voronoi_weights.py --stations data/interim/station_metadata/station_metadata.parquet --boundary data/interim/ercot_map/ercot_boundary.geojson --output data/interim/voronoi_weights/voronoi_weights.parquet
     deps:

@@ -31,6 +31,7 @@ LOAD_SOURCE_INTERVAL_COLUMNS = tuple(f"int_kWh{number}" for number in range(1, 1
 LOAD_INTERVAL_COLUMNS = LOAD_SOURCE_INTERVAL_COLUMNS
 LOAD_INTERVAL_MINUTES = 15
 LOAD_SOURCE_UNIT = "kWh per 15-minute interval"
+LOAD_INTERVAL_TIMESTAMP_CONVENTION = "right-hand endpoint"
 
 
 def missing_columns(columns: Iterable[str], required: Iterable[str]) -> tuple[str, ...]:

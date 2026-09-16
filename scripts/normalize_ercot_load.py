@@ -86,9 +86,10 @@ def normalize_load(input_dir: Path, output_dir: Path, overwrite: bool = False) -
         "rows_written": 0,
         "profile_rows_written": 0,
         "source_files": [],
-        "timestamp_semantics": "preserved as naive source fields; UTC conversion intentionally deferred",
+        "timestamp_semantics": "Date is the backcasted usage date; ADDTIME is record-placement provenance; UTC conversion deferred",
         "interval_duration_minutes": LOAD_INTERVAL_MINUTES,
         "unit_semantics": LOAD_SOURCE_UNIT,
+        "interval_timestamp_convention": "right-hand endpoint",
         "load_mw_conversion": "deferred until canonical timestamp and target aggregation are defined",
     }
     for path in paths:

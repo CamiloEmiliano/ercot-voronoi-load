@@ -60,7 +60,9 @@ def test_normalize_load_writes_partitioned_long_output(tmp_path):
     assert report["rows_written"] == 200
     assert report["interval_duration_minutes"] == 15
     assert report["unit_semantics"] == "kWh per 15-minute interval"
-    assert report["timestamp_semantics"].startswith("preserved")
+    assert report["interval_timestamp_convention"] == "right-hand endpoint"
+    assert "backcasted usage date" in report["timestamp_semantics"]
+    assert "record-placement provenance" in report["timestamp_semantics"]
     assert (output_dir / "quality_report.json").exists()
 
 
