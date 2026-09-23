@@ -49,6 +49,14 @@ stages:
     - scripts/extract_ercot_map.py
     outs:
     - data/interim/ercot_map/ercot_boundary.geojson
+  normalize_ercot_load:
+    cmd: mkdir -p data/interim/load_profile_long && .venv/bin/python scripts/normalize_ercot_load.py --input data/interim/ercot_backcast --output data/interim/load_profile_long --overwrite
+    deps:
+    - data/interim/ercot_backcast
+    - scripts/normalize_ercot_load.py
+    - scripts/source_contracts.py
+    outs:
+    - data/interim/load_profile_long
   build_station_metadata:
     cmd: mkdir -p data/interim/station_metadata && cd data/interim/station_metadata && ../../../.venv/bin/python ../../../scripts/build_station_metadata.py
     deps:
