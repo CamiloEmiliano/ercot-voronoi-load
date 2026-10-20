@@ -166,3 +166,255 @@ stages:
       hash: md5
       md5: 5248bf221a985158ac487ea53b7c069f
       size: 10701
+  normalize_fuel_mix_2025:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2025.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2025.xlsx
+      hash: md5
+      md5: 00af69e7d221dd07d553bb36589c09ac
+      size: 3048958
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2025.py
+      hash: md5
+      md5: 12167a7a039edb9a0311692f43e4294e
+      size: 8407
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2025.parquet
+      hash: md5
+      md5: 2bae024895110ce8ce2ccf924861791e
+      size: 2955065
+  normalize_fuel_mix_2022:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2022.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2022.xlsx
+      hash: md5
+      md5: d95e8d4f3e7d83cd8a3fa0c66403b12a
+      size: 2948586
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2022.py
+      hash: md5
+      md5: 22fc2b6ec7561f029517924a68993d11
+      size: 8375
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2022.parquet
+      hash: md5
+      md5: 3974994e9ccc8b7aec7dbe8c11f05798
+      size: 2952041
+  normalize_fuel_mix_2015:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2015.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenByFuel2015.xls
+      hash: md5
+      md5: 7d9c8b0bc1012b6e18e793503f4c3524
+      size: 5730304
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2015.py
+      hash: md5
+      md5: aa7d26779f6b4c0559a53fccb81026f1
+      size: 8009
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2015.parquet
+      hash: md5
+      md5: bcb8d2f722fd226ca04d570b4bb9794f
+      size: 2510869
+  normalize_fuel_mix_2017:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2017.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2017.xlsx
+      hash: md5
+      md5: 27b93d0991c57cee5a1f126bea2b2dfc
+      size: 2642780
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2017.py
+      hash: md5
+      md5: 3dc813d5a1feb1cda72c8a05f42fc6c9
+      size: 8682
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2017.parquet
+      hash: md5
+      md5: 599eca81575f935224688412141cd7e1
+      size: 2655849
+  normalize_fuel_mix_2020:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2020.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2020.xlsx
+      hash: md5
+      md5: 65530390ae743132fe6cfa81603b6596
+      size: 3518538
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2020.py
+      hash: md5
+      md5: 4fdc6a245b28cfe1d219c511ea7f7cfe
+      size: 8376
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2020.parquet
+      hash: md5
+      md5: c220d47ebd6f96c0acd2d20f89d1ce07
+      size: 2688594
+  normalize_fuel_mix_2019:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2019.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2019.xlsx
+      hash: md5
+      md5: 321400a7d801733d730685ea796c75d1
+      size: 2660630
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2019.py
+      hash: md5
+      md5: 0a6ea2834e2a0326df680e43181cde12
+      size: 8453
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2019.parquet
+      hash: md5
+      md5: 2215298f91879d02edf50e479e18364c
+      size: 2660732
+  normalize_fuel_mix_2018:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2018.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2018.xlsx
+      hash: md5
+      md5: 1e205c8c70350e1fee81be0e4a142741
+      size: 2654741
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2018.py
+      hash: md5
+      md5: b2f0e53b225ff74ca2a654d38e734376
+      size: 8504
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2018.parquet
+      hash: md5
+      md5: 6585d4db8105fa099a0c8f1944f1c663
+      size: 2657213
+  normalize_fuel_mix_2024:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2024.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2024.xlsx
+      hash: md5
+      md5: 070b42ad4dfd7250855117ca29eab60a
+      size: 2991488
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2024.py
+      hash: md5
+      md5: b3d0d65e298d590cbbb755c016444554
+      size: 8409
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2024.parquet
+      hash: md5
+      md5: a98224ec7b7611d8184d03af489e82a2
+      size: 3003522
+  normalize_fuel_mix_2014:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2014.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenByFuel2014.xls
+      hash: md5
+      md5: 4b65f33b76fbc037f21120771a9246b3
+      size: 5816832
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2014.py
+      hash: md5
+      md5: eb77afbfe453ffdd79076795216ce9cb
+      size: 8024
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2014.parquet
+      hash: md5
+      md5: 995b980662b40f00b5ceffbb81434bd8
+      size: 2557758
+  normalize_fuel_mix_2016:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2016.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2016.xlsx
+      hash: md5
+      md5: 26f38d45abec51a4e15073ff6044fc4a
+      size: 3576866
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2016.py
+      hash: md5
+      md5: c7f9b396fb9a59b8412fc751785161c9
+      size: 8272
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2016.parquet
+      hash: md5
+      md5: c6cde37a6f2df9a0aa86e438ed847e20
+      size: 2642701
+  normalize_fuel_mix_2021:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2021.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2021.xlsx
+      hash: md5
+      md5: 816c80bf51dbc4b2d808f474a86b81e0
+      size: 3508657
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2021.py
+      hash: md5
+      md5: 31b3cf771fc109a567b60bd9bf4091a3
+      size: 8368
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2021.parquet
+      hash: md5
+      md5: aaaf67c9336cd66d2b2ef4a17ae81c6d
+      size: 2698760
+  normalize_fuel_mix_2023:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2023.py --workers 1
+    deps:
+    - path: data/raw/ercot_fuel_mix/IntGenbyFuel2023.xlsx
+      hash: md5
+      md5: 2d5038f93757de2be0461e31cfdfa77f
+      size: 2963156
+      isexec: true
+    - path: scripts/ercot_fuel_mix_qc.py
+      hash: md5
+      md5: 5af6b1039a9ce672b57b463d3f4e7782
+      size: 17664
+    - path: scripts/normalize_ercot_fuel_mix_2023.py
+      hash: md5
+      md5: 16c4f938921421066fb7977e444a4ba4
+      size: 8376
+    outs:
+    - path: data/interim/fuel_mix/fuel_mix_2023.parquet
+      hash: md5
+      md5: 411985149c1a40b33cedf7224e94f799
+      size: 2991083

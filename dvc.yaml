@@ -104,3 +104,99 @@ stages:
     - scripts/assemble_observed_panel.py
     outs:
     - data/processed/ercot_hourly_panel
+  normalize_fuel_mix_2014:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2014.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenByFuel2014.xls
+    - scripts/normalize_ercot_fuel_mix_2014.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2014.parquet
+  normalize_fuel_mix_2015:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2015.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenByFuel2015.xls
+    - scripts/normalize_ercot_fuel_mix_2015.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2015.parquet
+  normalize_fuel_mix_2016:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2016.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2016.xlsx
+    - scripts/normalize_ercot_fuel_mix_2016.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2016.parquet
+  normalize_fuel_mix_2017:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2017.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2017.xlsx
+    - scripts/normalize_ercot_fuel_mix_2017.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2017.parquet
+  normalize_fuel_mix_2018:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2018.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2018.xlsx
+    - scripts/normalize_ercot_fuel_mix_2018.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2018.parquet
+  normalize_fuel_mix_2019:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2019.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2019.xlsx
+    - scripts/normalize_ercot_fuel_mix_2019.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2019.parquet
+  normalize_fuel_mix_2020:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2020.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2020.xlsx
+    - scripts/normalize_ercot_fuel_mix_2020.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2020.parquet
+  normalize_fuel_mix_2021:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2021.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2021.xlsx
+    - scripts/normalize_ercot_fuel_mix_2021.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2021.parquet
+  normalize_fuel_mix_2022:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2022.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2022.xlsx
+    - scripts/normalize_ercot_fuel_mix_2022.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2022.parquet
+  normalize_fuel_mix_2023:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2023.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2023.xlsx
+    - scripts/normalize_ercot_fuel_mix_2023.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2023.parquet
+  normalize_fuel_mix_2024:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2024.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2024.xlsx
+    - scripts/normalize_ercot_fuel_mix_2024.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2024.parquet
+  normalize_fuel_mix_2025:
+    cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2025.py --workers 1
+    deps:
+    - data/raw/ercot_fuel_mix/IntGenbyFuel2025.xlsx
+    - scripts/normalize_ercot_fuel_mix_2025.py
+    - scripts/ercot_fuel_mix_qc.py
+    outs:
+    - data/interim/fuel_mix/fuel_mix_2025.parquet
