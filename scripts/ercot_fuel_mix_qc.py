@@ -29,6 +29,7 @@ MONTH_SHEETS = {
     2020: ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
     2021: ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
     2022: ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+    2023: ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
 }
 
 
@@ -71,7 +72,7 @@ def _parse_date_fuel(value: Any) -> tuple[date, str] | None:
 
 
 def _source_date_fuel(year: int, row: tuple[Any, ...]) -> tuple[date, str] | None:
-    if year in (2017, 2018, 2019, 2020, 2021, 2022):
+    if year in (2017, 2018, 2019, 2020, 2021, 2022, 2023):
         raw_date = row[0] if row else None
         fuel = row[1] if len(row) > 1 else None
         if isinstance(raw_date, datetime):
@@ -101,6 +102,8 @@ def _timestamp(year: int, operating_date: date, endpoint: int, slot: int, *, sec
         return local_end.replace(tzinfo=timezone(timedelta(hours=-5))).isoformat(timespec="seconds")
     if year == 2022 and operating_date == date(2022, 11, 6) and 4 <= slot <= 7:
         return local_end.replace(tzinfo=timezone(timedelta(hours=-5))).isoformat(timespec="seconds")
+    if year == 2023 and operating_date == date(2023, 11, 5) and 4 <= slot <= 7:
+        return local_end.replace(tzinfo=timezone(timedelta(hours=-5))).isoformat(timespec="seconds")
     if year in (2014, 2015) and operating_date in (date(year, 3, 9) if year == 2014 else date(year, 3, 8),):
         if year == 2014 and 7 <= slot <= 10:
             return local_end.replace(tzinfo=timezone(timedelta(hours=-6))).isoformat(timespec="seconds")
@@ -119,6 +122,8 @@ def _timestamp(year: int, operating_date: date, endpoint: int, slot: int, *, sec
     if year == 2021 and operating_date == date(2021, 3, 14) and 8 <= slot <= 11:
         return local_end.replace(tzinfo=timezone(timedelta(hours=-6))).isoformat(timespec="seconds")
     if year == 2022 and operating_date == date(2022, 3, 13) and 8 <= slot <= 11:
+        return local_end.replace(tzinfo=timezone(timedelta(hours=-6))).isoformat(timespec="seconds")
+    if year == 2023 and operating_date == date(2023, 3, 12) and 8 <= slot <= 11:
         return local_end.replace(tzinfo=timezone(timedelta(hours=-6))).isoformat(timespec="seconds")
     return local_end.replace(tzinfo=CENTRAL, fold=0).isoformat(timespec="seconds")
 
@@ -209,7 +214,7 @@ def _iter_xlsx_candidates(year: int, workbook_path: Path) -> Iterator[SourceValu
             sheet.reset_dimensions()
             rows = sheet.iter_rows(values_only=True)
             header_row = next(rows)
-            source_column_start = 5 if year in (2017, 2018, 2019, 2020, 2021, 2022) else 3
+            source_column_start = 5 if year in (2017, 2018, 2019, 2020, 2021, 2022, 2023) else 3
             headers = [_interval_minutes(value) for value in header_row[source_column_start - 1:source_column_start - 1 + 96]]
             for row_number, row in enumerate(rows, start=2):
                 parsed = _source_date_fuel(year, row)
@@ -225,7 +230,7 @@ def _iter_xlsx_candidates(year: int, workbook_path: Path) -> Iterator[SourceValu
                     )
                     if candidate is not None:
                         yield candidate
-                if year in (2016, 2017, 2018, 2019, 2020, 2021, 2022) and operating_date == date(year, 11, 6 if year == 2016 else 5 if year == 2017 else 4 if year == 2018 else 3 if year == 2019 else 1 if year == 2020 else 7 if year == 2021 else 6):
+                if year in (2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023) and operating_date == date(year, 11, 6 if year == 2016 else 5 if year == 2017 else 4 if year == 2018 else 3 if year == 2019 else 1 if year == 2020 else 7 if year == 2021 else 6 if year == 2022 else 5):
                     dst_start = 98 if year == 2016 else 100
                     for dst_index, value in enumerate(row[dst_start:dst_start + 4]):
                         if not _is_value(value):
