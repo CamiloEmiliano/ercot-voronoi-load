@@ -1,16 +1,7 @@
-import importlib.util
-from pathlib import Path
-
 import pandas as pd
 import pytest
 
-
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "source_contracts.py"
-SPEC = importlib.util.spec_from_file_location("source_contracts", SCRIPT_PATH)
-if SPEC is None or SPEC.loader is None:
-    raise ImportError(f"Unable to import source contracts from {SCRIPT_PATH}")
-source_contracts = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(source_contracts)
+from bayes_demand_fcst import contracts as source_contracts
 
 
 def _asos_frame() -> pd.DataFrame:

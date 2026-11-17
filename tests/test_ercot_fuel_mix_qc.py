@@ -5,7 +5,7 @@ import openpyxl
 import pandas as pd
 import pytest
 
-from scripts.ercot_fuel_mix_qc import _iter_candidates, audit_workbook_to_parquet, write_parquet_with_qc
+from bayes_demand_fcst.qc.fuel_mix import _iter_candidates, audit_workbook_to_parquet, write_parquet_with_qc
 
 
 def _make_2017_workbook(path):
