@@ -10,7 +10,8 @@ from bayes_demand_fcst.qc.fuel_mix import _iter_candidates, audit_workbook_to_pa
 
 def _make_2017_workbook(path):
     workbook = openpyxl.Workbook()
-    workbook.remove(workbook.active)
+    if workbook.active is not None:
+        workbook.remove(workbook.active)
     for month, month_name in enumerate(
         ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
         start=1,

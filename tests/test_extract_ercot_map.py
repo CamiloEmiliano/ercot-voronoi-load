@@ -32,6 +32,7 @@ def test_extract_ercot_map_filters_erct_and_writes_geojson(tmp_path):
     output = tmp_path / "ercot_boundary.geojson"
 
     with shapefile.Writer(str(source), shapeType=shapefile.POLYGON) as writer:
+        assert isinstance(writer, shapefile.Writer)
         writer.field("Subregion", "C")
         writer.field("Shape_Leng", "F", decimal=11)
         writer.field("Shape_Area", "F", decimal=11)
@@ -60,6 +61,7 @@ def test_cli_writes_default_output_to_current_directory(tmp_path):
     output_dir.mkdir()
 
     with shapefile.Writer(str(source), shapeType=shapefile.POLYGON) as writer:
+        assert isinstance(writer, shapefile.Writer)
         writer.field("Subregion", "C")
         writer.field("Shape_Leng", "F", decimal=11)
         writer.field("Shape_Area", "F", decimal=11)

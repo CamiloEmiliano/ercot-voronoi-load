@@ -24,7 +24,7 @@ def test_2025_includes_wsl_as_a_tenth_fuel():
 
 
 def test_spring_forward_preserves_2025_0215_through_0300_gap():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = normalize_row(date(2025, 3, 9), "WSL", values, _headers())
     assert [records[index]["timestamp_local"] for index in range(7, 13)] == [
@@ -53,7 +53,7 @@ def test_fall_back_preserves_both_0115_through_0200_passes():
 
 
 def test_spring_gap_sorts_as_timestamp_major_contiguous_block():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = [record for fuel in ("Biomass", "WSL") for record in normalize_row(date(2025, 3, 9), fuel, values, _headers())]
     frame = _sort_records(pd.DataFrame.from_records(records))
@@ -96,13 +96,17 @@ def test_saved_parquet_matches_workbook_dst_rows(tmp_path):
         sheet.reset_dimensions()
         source_rows = [row for row in sheet.iter_rows(values_only=True)
                        if isinstance(row[0], datetime) and row[0].date() == date(2025, 11, 2)]
-        assert len(source_rows) == 10 and {row[1] for row in source_rows} == set(FUEL_TYPES)
+        assert len(source_rows) == 10 and {str(row[1]) for row in source_rows} == set(FUEL_TYPES)
         for row in source_rows:
             daily = saved[(saved.fuel_type == row[1]) & saved.timestamp_local.str.startswith("2025-11-02T")]
             for index, local_time in enumerate(("01:15", "01:30", "01:45", "02:00")):
                 first = daily[daily.timestamp_local == f"2025-11-02T{local_time}:00-05:00"]
                 second = daily[daily.timestamp_local == f"2025-11-02T{local_time}:00-06:00"]
-                assert first.generation_mwh.item() == float(row[8 + index])
-                assert second.generation_mwh.item() == float(row[100 + index])
+                first_val = row[8 + index]
+                second_val = row[100 + index]
+                assert isinstance(first_val, (int, float))
+                assert isinstance(second_val, (int, float))
+                assert first.generation_mwh.item() == float(first_val)
+                assert second.generation_mwh.item() == float(second_val)
     finally:
         workbook.close()

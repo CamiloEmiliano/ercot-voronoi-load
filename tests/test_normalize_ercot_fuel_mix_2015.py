@@ -40,7 +40,7 @@ def test_fall_back_retains_first_and_second_occurrence_with_distinct_offsets():
 
 
 def test_dash_becomes_zero_and_blank_becomes_nan():
-    values = [1.0] * 96
+    values: list[object] = [1.0] * 96
     values[0] = "-"
     values[1] = ""
     records = normalize_row(date(2015, 1, 1), "Biomass", values, _headers())

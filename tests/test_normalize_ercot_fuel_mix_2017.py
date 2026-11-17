@@ -11,7 +11,7 @@ def _headers():
 
 
 def test_spring_forward_gap_is_2017_specific_0215_through_0300():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = normalize_row(date(2017, 3, 12), "Biomass", values, _headers())
 
@@ -48,7 +48,7 @@ def test_fall_back_second_pass_is_0115_through_0200():
 
 
 def test_spring_placeholders_sort_as_timestamp_major_block():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = [
         record

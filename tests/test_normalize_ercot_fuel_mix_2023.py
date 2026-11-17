@@ -24,7 +24,7 @@ def test_2023_includes_wsl_as_a_tenth_fuel():
 
 
 def test_spring_forward_preserves_2023_0215_through_0300_gap():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = normalize_row(date(2023, 3, 12), "WSL", values, _headers())
 
@@ -63,7 +63,7 @@ def test_fall_back_preserves_both_0115_through_0200_passes():
 
 
 def test_spring_placeholders_sort_as_timestamp_major_contiguous_block():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = [
         record
@@ -117,7 +117,7 @@ def test_generated_parquet_persists_and_matches_dst_source_cells(tmp_path):
             if isinstance(row[0], datetime) and row[0].date() == date(2023, 11, 5)
         ]
         assert len(rows) == 10
-        assert {row[1] for row in rows} == set(FUEL_TYPES)
+        assert {str(row[1]) for row in rows} == set(FUEL_TYPES)
         for row in rows:
             fuel_type = row[1]
             daily = saved[
@@ -127,7 +127,11 @@ def test_generated_parquet_persists_and_matches_dst_source_cells(tmp_path):
             for source_index, local_time in enumerate(("01:15", "01:30", "01:45", "02:00")):
                 first = daily[daily["timestamp_local"] == f"2023-11-05T{local_time}:00-05:00"]
                 second = daily[daily["timestamp_local"] == f"2023-11-05T{local_time}:00-06:00"]
-                assert first["generation_mwh"].item() == float(row[8 + source_index])
-                assert second["generation_mwh"].item() == float(row[100 + source_index])
+                first_val = row[8 + source_index]
+                second_val = row[100 + source_index]
+                assert isinstance(first_val, (int, float))
+                assert isinstance(second_val, (int, float))
+                assert first["generation_mwh"].item() == float(first_val)
+                assert second["generation_mwh"].item() == float(second_val)
     finally:
         workbook.close()

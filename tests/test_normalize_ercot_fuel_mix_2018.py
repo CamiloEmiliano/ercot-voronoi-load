@@ -18,7 +18,7 @@ def _headers():
 
 
 def test_spring_forward_preserves_2018_0215_through_0300_gap():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = normalize_row(date(2018, 3, 11), "Biomass", values, _headers())
 
@@ -57,7 +57,7 @@ def test_fall_back_preserves_both_0115_through_0200_passes():
 
 
 def test_spring_placeholders_sort_as_timestamp_major_contiguous_block():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     values[8:12] = [None] * 4
     records = [
         record
@@ -120,7 +120,11 @@ def test_generated_parquet_persists_and_matches_dst_source_cells(tmp_path):
             for source_index, local_time in enumerate(("01:15", "01:30", "01:45", "02:00")):
                 first = daily[daily["timestamp_local"] == f"2018-11-04T{local_time}:00-05:00"]
                 second = daily[daily["timestamp_local"] == f"2018-11-04T{local_time}:00-06:00"]
-                assert first["generation_mwh"].item() == float(row[8 + source_index])
-                assert second["generation_mwh"].item() == float(row[100 + source_index])
+                first_val = row[8 + source_index]
+                second_val = row[100 + source_index]
+                assert isinstance(first_val, (int, float))
+                assert isinstance(second_val, (int, float))
+                assert first["generation_mwh"].item() == float(first_val)
+                assert second["generation_mwh"].item() == float(second_val)
     finally:
         workbook.close()

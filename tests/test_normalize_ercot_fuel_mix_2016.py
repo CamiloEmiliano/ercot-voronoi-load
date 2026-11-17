@@ -11,7 +11,7 @@ def _headers():
 
 
 def test_spring_forward_preserves_96_slots_and_gap_nan():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     for index in range(7, 11):
         values[index] = None
     records = normalize_row(date(2016, 3, 13), "Biomass", values, _headers())
@@ -29,7 +29,7 @@ def test_spring_forward_preserves_96_slots_and_gap_nan():
 
 
 def test_spring_gap_nan_rows_sort_as_one_block():
-    values = [float(index) for index in range(96)]
+    values: list[float | None] = [float(index) for index in range(96)]
     for index in range(7, 11):
         values[index] = None
     records = [

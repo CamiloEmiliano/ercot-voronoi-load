@@ -104,7 +104,7 @@ def test_sorting_keeps_spring_gap_as_contiguous_timestamp_major_block():
 
 
 def test_dash_is_zero_and_blank_is_nan():
-    values = [1.0] * 96
+    values: list[object] = [1.0] * 96
     values[0] = "-"
     values[1] = ""
     records = _normalize_row(date(2014, 1, 1), "Biomass", values, _headers())
