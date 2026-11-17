@@ -30,3 +30,7 @@ ADR-00002-hourly-ercot-native-load-and-fuel-mix--.md  (53 chars)
 ---
 
 ## Master Decision Index
+
+| ADR ID | Title | Status | Date (UTC) | Target Subsystem | Linked Commits |
+|---|---|---|---|---|---|
+| [ADR-00001](ADR-00001-adopt-ercot-native-load-hourly-target---.md) | Adopt ERCOT Native Load as Hourly Forecasting Target | ACCEPTED | 2026-11-17 | Load ingestion, fuel-mix aggregation, Bayesian GAM scope | Pending implementation |
