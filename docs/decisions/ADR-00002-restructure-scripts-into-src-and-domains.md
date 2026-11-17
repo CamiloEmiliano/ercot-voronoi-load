@@ -3,9 +3,9 @@
 - **ADR ID**: ADR-00002
 - **Filename**: `ADR-00002-restructure-scripts-into-src-and-domains.md`
 - **Date**: 2026-11-17 05:28 UTC
-- **Status**: PROPOSED
+- **Status**: ACCEPTED
 - **Target Subsystem**: Repository layout, DVC stage wiring, reusable Python modules, and CLI scripts (`src/`, `scripts/`, `tests/`, `dvc.yaml`)
-- **Linked Commits**: Pending acceptance
+- **Linked Commits**: [`c162855`](../../src/bayes_demand_fcst/contracts.py), [`6eb7389`](../../scripts/weather/normalize_asos_weather.py), [`75a9955`](../../scripts/fuel_mix/aggregate_ercot_fuel_mix_hourly.py), [`373c260`](../../scripts/load/normalize_ercot_native_load.py)
 
 ---
 

@@ -33,21 +33,16 @@ bayes_demand_fcst/
 ├── reports/
 │   └── figures/
 ├── scripts/
-│   ├── download_asos_weather_ar.py
-│   ├── download_asos_weather_la.py
-│   ├── download_asos_weather_nm.py
-│   ├── download_asos_weather_ok.py
-│   ├── download_asos_weather_tx.py
-│   ├── extract_ercot_backcast.py
-│   └── extract_ercot_map.py
+│   ├── README.md
+│   ├── fuel_mix/
+│   ├── load/
+│   ├── panel/
+│   ├── spatial/
+│   └── weather/
+├── src/
+│   └── bayes_demand_fcst/
 └── tests/
-    ├── test_download_asos_weather_ar.py
-    ├── test_download_asos_weather_la.py
-    ├── test_download_asos_weather_nm.py
-    ├── test_download_asos_weather_ok.py
-    ├── test_download_asos_weather_tx.py
-    ├── test_extract_ercot_backcast.py
-    └── test_extract_ercot_map.py
+    └── ...
 ```
 
 ## Quick start
@@ -56,6 +51,7 @@ bayes_demand_fcst/
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install --no-build-isolation --no-deps -e .
 pytest
 .venv/bin/dvc dag
 ```
@@ -75,24 +71,24 @@ report forecast uncertainty rather than point forecasts alone.
 
 ## Download Texas ASOS weather data
 
-`scripts/download_asos_weather_tx.py` downloads the selected 170 active, land-based
+`scripts/weather/download_asos_weather_tx.py` downloads the selected 170 active, land-based
 Texas ASOS stations with records beginning no later than 2010. It requests only
 load-relevant numeric weather fields, saves raw CSV responses unchanged in the
 directory where it is invoked, skips files already present, and defaults to dry-run mode.
 
 ```bash
 cd data/raw/weather
-python ../../../scripts/download_asos_weather_tx.py
-python ../../../scripts/download_asos_weather_tx.py --execute
+python ../../../scripts/weather/download_asos_weather_tx.py
+python ../../../scripts/weather/download_asos_weather_tx.py --execute
 ```
 
 The default download spans 2014 through 2025, one month per request. The script
 uses one request at a time, streams progress as it receives data, and waits at
 least five seconds between requests.
 
-## Extract ERCOT load workbooks
+## Extract ERCOT load workbooks (Legacy)
 
-`scripts/extract_ercot_backcast.py` converts each `Q1_YYYY` through `Q4_YYYY`
+`scripts/load/extract_ercot_backcast.py` converts each `Q1_YYYY` through `Q4_YYYY`
 worksheet in `data/raw/ercot_backcast/` into a separate Parquet file. The raw
 workbooks remain unchanged; each output preserves the source columns and adds
 `source_workbook` and `source_sheet` provenance fields. Run it from the desired
@@ -101,8 +97,8 @@ written as individual monthly files so their boundaries can be validated before 
 
 ```bash
 cd data/interim/ercot_backcast
-../../../.venv/bin/python ../../../scripts/extract_ercot_backcast.py
-../../../.venv/bin/python ../../../scripts/extract_ercot_backcast.py --year 2015
+../../../.venv/bin/python ../../../scripts/load/extract_ercot_backcast.py
+../../../.venv/bin/python ../../../scripts/load/extract_ercot_backcast.py --year 2015
 ```
 
 Outputs follow this structure:
@@ -122,13 +118,13 @@ Existing files are skipped. Use `--overwrite` to replace them.
 
 ## Extract ERCOT boundary
 
-`scripts/extract_ercot_map.py` reads the eGRID 2023 Subregions shapefile bundle
+`scripts/spatial/extract_ercot_map.py` reads the eGRID 2023 Subregions shapefile bundle
 in `data/raw/ercot_map/`, filters the `Subregion == "ERCT"` feature, and writes
 the ERCOT boundary GeoJSON. Run it from the desired interim output directory.
 
 ```bash
 cd data/interim/ercot_map
-../../../.venv/bin/python ../../../scripts/extract_ercot_map.py
+../../../.venv/bin/python ../../../scripts/spatial/extract_ercot_map.py
 ```
 
 The output is:
@@ -147,20 +143,20 @@ The pipeline declared in `dvc.yaml` currently contains:
 
 ```text
 download_weather_tx
-    scripts/download_asos_weather_tx.py
+    scripts/weather/download_asos_weather_tx.py
         -> data/raw/weather_tx_asos/
 
 download_weather_{nm,ok,ar,la}
-    scripts/download_asos_weather_{nm,ok,ar,la}.py
+    scripts/weather/download_asos_weather_{nm,ok,ar,la}.py
         -> data/raw/weather_{nm,ok,ar,la}_asos/
 
 extract_ercot_backcast
-    data/raw/ercot_backcast/ + scripts/extract_ercot_backcast.py
+    data/raw/ercot_backcast/ + scripts/load/extract_ercot_backcast.py
         -> data/interim/ercot_backcast/
 
 extract_ercot_map
     data/raw/ercot_map/eGRID2023_Subregions.{shp,shx,dbf,prj}
-    + scripts/extract_ercot_map.py
+    + scripts/spatial/extract_ercot_map.py
         -> data/interim/ercot_map/ercot_boundary.geojson
 ```
 

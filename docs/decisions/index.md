@@ -33,5 +33,5 @@ ADR-00002-hourly-ercot-native-load-and-fuel-mix--.md  (53 chars)
 
 | ADR ID | Title | Status | Date (UTC) | Target Subsystem | Linked Commits |
 |---|---|---|---|---|---|
-| [ADR-00001](ADR-00001-adopt-ercot-native-load-hourly-target---.md) | Adopt ERCOT Native Load as Hourly Forecasting Target | ACCEPTED | 2026-11-17 | Load ingestion, fuel-mix aggregation, Bayesian GAM scope | [`3624d47`](../../scripts/normalize_ercot_native_load.py) |
-| [ADR-00002](ADR-00002-restructure-scripts-into-src-and-domains.md) | Restructure `scripts/` into `src/` Package and Domain Subdirectories | PROPOSED | 2026-11-17 | Repository layout, DVC wiring, `src/`, `scripts/`, `tests/` | Pending acceptance |
+| [ADR-00001](ADR-00001-adopt-ercot-native-load-hourly-target---.md) | Adopt ERCOT Native Load as Hourly Forecasting Target | ACCEPTED | 2026-11-17 | Load ingestion, fuel-mix aggregation, Bayesian GAM scope | [`3624d47`](../../scripts/load/normalize_ercot_native_load.py) |
+| [ADR-00002](ADR-00002-restructure-scripts-into-src-and-domains.md) | Restructure `scripts/` into `src/` Package and Domain Subdirectories | ACCEPTED | 2026-11-17 | Repository layout, DVC wiring, `src/`, `scripts/`, `tests/` | [`c162855`](../../src/bayes_demand_fcst/contracts.py), [`6eb7389`](../../scripts/weather/normalize_asos_weather.py), [`75a9955`](../../scripts/fuel_mix/aggregate_ercot_fuel_mix_hourly.py), [`373c260`](../../scripts/load/normalize_ercot_native_load.py) |
