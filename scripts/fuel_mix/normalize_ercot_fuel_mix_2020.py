@@ -1,4 +1,4 @@
-"""Normalize the 2018 ERCOT Fuel Mix workbook into interval-level Parquet."""
+"""Normalize the 2020 ERCOT Fuel Mix workbook into interval-level Parquet."""
 
 from __future__ import annotations
 
@@ -15,14 +15,11 @@ from zoneinfo import ZoneInfo
 import openpyxl
 import pandas as pd
 
-if __package__:
-    from .ercot_fuel_mix_qc import write_parquet_with_qc
-else:
-    from ercot_fuel_mix_qc import write_parquet_with_qc
+from bayes_demand_fcst.qc.fuel_mix import write_parquet_with_qc
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_INPUT = PROJECT_ROOT / "data/raw/ercot_fuel_mix/IntGenbyFuel2018.xlsx"
-DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/fuel_mix/fuel_mix_2018.parquet"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_INPUT = PROJECT_ROOT / "data/raw/ercot_fuel_mix/IntGenbyFuel2020.xlsx"
+DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/fuel_mix/fuel_mix_2020.parquet"
 WORKSHEETS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 FUEL_TYPES = ("Biomass", "Coal", "Gas", "Gas-CC", "Hydro", "Nuclear", "Other", "Solar", "Wind")
 CENTRAL = ZoneInfo("America/Chicago")
@@ -72,13 +69,13 @@ def normalize_row(
     interval_headers: Sequence[int],
     dst_values: Sequence[Any] = (),
 ) -> list[dict[str, Any]]:
-    """Map one 2018 daily fuel row, preserving source values and both DST passes."""
-    spring_forward = operating_date == date(2018, 3, 11)
-    fall_back = operating_date == date(2018, 11, 4)
+    """Map one 2020 daily fuel row, retaining the structural spring gap and both fall passes."""
+    spring_forward = operating_date == date(2020, 3, 8)
+    fall_back = operating_date == date(2020, 11, 1)
     if len(interval_values) != 96 or len(interval_headers) != 96:
-        raise ValueError("2018 rows require exactly 96 regular interval values and headers")
+        raise ValueError("2020 rows require exactly 96 regular interval values and headers")
     if fall_back and len(dst_values) != 4:
-        raise ValueError("2018-11-04 rows require four second-pass DST values")
+        raise ValueError("2020-11-01 rows require four second-pass DST values")
 
     records: list[dict[str, Any]] = []
     for slot, endpoint_minutes in enumerate(interval_headers):
@@ -110,8 +107,6 @@ def _normalize_sheet(args: tuple[str, str]) -> list[dict[str, Any]]:
     workbook = openpyxl.load_workbook(workbook_path, read_only=True, data_only=True)
     try:
         sheet = workbook[sheet_name]
-        # The source workbook declares A1 as its dimension despite containing data.
-        sheet.reset_dimensions()
         rows = sheet.iter_rows(values_only=True)
         headers = next(rows)
         interval_headers = [_interval_minutes(value) for value in headers[4:100]]
@@ -131,11 +126,11 @@ def _normalize_sheet(args: tuple[str, str]) -> list[dict[str, Any]]:
             interval_values = row[4:100]
             if len(interval_values) != 96:
                 raise ValueError(f"{sheet_name} row {row_number}: fewer than 96 interval cells")
-            if operating_date == date(2018, 3, 11) and any(
+            if operating_date == date(2020, 3, 8) and any(
                 value not in (None, "") for value in interval_values[8:12]
             ):
                 raise ValueError(f"{sheet_name} row {row_number}: expected M:P spring structural blanks")
-            dst_values = row[100:104] if operating_date == date(2018, 11, 4) else ()
+            dst_values = row[100:104] if operating_date == date(2020, 11, 1) else ()
             records.extend(normalize_row(operating_date, fuel_type, interval_values, interval_headers, dst_values))
         return records
     finally:
@@ -145,13 +140,13 @@ def _normalize_sheet(args: tuple[str, str]) -> list[dict[str, Any]]:
 def _sort_records(frame: pd.DataFrame) -> pd.DataFrame:
     sort_utc = pd.to_datetime(frame["timestamp_local"], format="ISO8601", utc=True)
     spring_gap = frame["timestamp_local"].str.startswith((
-        "2018-03-11T02:15:",
-        "2018-03-11T02:30:",
-        "2018-03-11T02:45:",
-        "2018-03-11T03:00:",
+        "2020-03-08T02:15:",
+        "2020-03-08T02:30:",
+        "2020-03-08T02:45:",
+        "2020-03-08T03:00:",
     )) & frame["generation_mwh"].isna()
     # Structural placeholders have no real instant; keep them before 03:15.
-    sort_utc.loc[spring_gap] = pd.Timestamp("2018-03-11T08:07:30Z")
+    sort_utc.loc[spring_gap] = pd.Timestamp("2020-03-08T08:07:30Z")
     return (
         frame.assign(_sort_utc=sort_utc)
         .sort_values(["_sort_utc", "timestamp_local", "fuel_type"], ignore_index=True)
@@ -159,12 +154,12 @@ def _sort_records(frame: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def normalize_2018(
+def normalize_2020(
     input_path: Path = DEFAULT_INPUT,
     output_path: Path = DEFAULT_OUTPUT,
     workers: int | None = None,
 ) -> pd.DataFrame:
-    """Create one long-form 2018 Parquet artifact and publish only after sampled QC passes."""
+    """Create 2020 Parquet and publish only after persisted sampled QC passes."""
     if not input_path.is_file():
         raise FileNotFoundError(input_path)
     jobs = [(str(input_path), sheet_name) for sheet_name in WORKSHEETS]
@@ -174,8 +169,9 @@ def normalize_2018(
     frame = pd.DataFrame.from_records(records, columns=OUTPUT_COLUMNS)
     frame["generation_mwh"] = frame["generation_mwh"].astype("float64")
     frame = _sort_records(frame)
-    from_qc = write_parquet_with_qc(frame, 2018, input_path, output_path)
-    frame.attrs["sampled_values_verified"] = from_qc
+    frame.attrs["sampled_values_verified"] = write_parquet_with_qc(
+        frame, 2020, input_path, output_path
+    )
     return frame
 
 
@@ -185,7 +181,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--workers", type=int, default=None)
     args = parser.parse_args()
-    frame = normalize_2018(args.input, args.output, args.workers)
+    frame = normalize_2020(args.input, args.output, args.workers)
     print(json.dumps({
         "output": str(args.output),
         "rows": len(frame),

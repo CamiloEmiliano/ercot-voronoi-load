@@ -3,7 +3,7 @@ from datetime import date, datetime, time
 import numpy as np
 import pandas as pd
 
-from scripts.normalize_ercot_fuel_mix_2016 import _interval_minutes, _sort_records, normalize_row
+from scripts.fuel_mix.normalize_ercot_fuel_mix_2016 import _interval_minutes, _sort_records, normalize_row
 
 
 def _headers():

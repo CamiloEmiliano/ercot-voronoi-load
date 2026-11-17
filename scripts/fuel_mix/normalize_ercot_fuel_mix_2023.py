@@ -15,12 +15,9 @@ from zoneinfo import ZoneInfo
 import openpyxl
 import pandas as pd
 
-if __package__:
-    from .ercot_fuel_mix_qc import write_parquet_with_qc
-else:
-    from ercot_fuel_mix_qc import write_parquet_with_qc
+from bayes_demand_fcst.qc.fuel_mix import write_parquet_with_qc
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT = PROJECT_ROOT / "data/raw/ercot_fuel_mix/IntGenbyFuel2023.xlsx"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/fuel_mix/fuel_mix_2023.parquet"
 WORKSHEETS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")

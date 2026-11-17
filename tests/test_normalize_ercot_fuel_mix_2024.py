@@ -4,7 +4,7 @@ import numpy as np
 import openpyxl
 import pandas as pd
 
-from scripts.normalize_ercot_fuel_mix_2024 import (
+from scripts.fuel_mix.normalize_ercot_fuel_mix_2024 import (
     DEFAULT_INPUT,
     FUEL_TYPES,
     _interval_minutes,

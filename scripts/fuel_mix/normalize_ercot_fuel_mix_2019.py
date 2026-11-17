@@ -1,4 +1,4 @@
-"""Normalize the 2025 ERCOT Fuel Mix workbook into interval-level Parquet."""
+"""Normalize the 2019 ERCOT Fuel Mix workbook into interval-level Parquet."""
 
 from __future__ import annotations
 
@@ -15,16 +15,13 @@ from zoneinfo import ZoneInfo
 import openpyxl
 import pandas as pd
 
-if __package__:
-    from .ercot_fuel_mix_qc import write_parquet_with_qc
-else:
-    from ercot_fuel_mix_qc import write_parquet_with_qc
+from bayes_demand_fcst.qc.fuel_mix import write_parquet_with_qc
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_INPUT = PROJECT_ROOT / "data/raw/ercot_fuel_mix/IntGenbyFuel2025.xlsx"
-DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/fuel_mix/fuel_mix_2025.parquet"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_INPUT = PROJECT_ROOT / "data/raw/ercot_fuel_mix/IntGenbyFuel2019.xlsx"
+DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/fuel_mix/fuel_mix_2019.parquet"
 WORKSHEETS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-FUEL_TYPES = ("Biomass", "Coal", "Gas", "Gas-CC", "Hydro", "Nuclear", "Other", "Solar", "WSL", "Wind")
+FUEL_TYPES = ("Biomass", "Coal", "Gas", "Gas-CC", "Hydro", "Nuclear", "Other", "Solar", "Wind")
 CENTRAL = ZoneInfo("America/Chicago")
 OUTPUT_COLUMNS = ("timestamp_local", "fuel_type", "generation_mwh")
 
@@ -72,13 +69,13 @@ def normalize_row(
     interval_headers: Sequence[int],
     dst_values: Sequence[Any] = (),
 ) -> list[dict[str, Any]]:
-    """Map one 2025 daily fuel row, preserving structural gap and both fall passes."""
-    spring_forward = operating_date == date(2025, 3, 9)
-    fall_back = operating_date == date(2025, 11, 2)
+    """Map one 2019 daily fuel row, preserving both DST passes."""
+    spring_forward = operating_date == date(2019, 3, 10)
+    fall_back = operating_date == date(2019, 11, 3)
     if len(interval_values) != 96 or len(interval_headers) != 96:
-        raise ValueError("2025 rows require exactly 96 regular interval values and headers")
+        raise ValueError("2019 rows require exactly 96 regular interval values and headers")
     if fall_back and len(dst_values) != 4:
-        raise ValueError("2025-11-02 rows require four second-pass DST values")
+        raise ValueError("2019-11-03 rows require four second-pass DST values")
 
     records: list[dict[str, Any]] = []
     for slot, endpoint_minutes in enumerate(interval_headers):
@@ -110,6 +107,7 @@ def _normalize_sheet(args: tuple[str, str]) -> list[dict[str, Any]]:
     workbook = openpyxl.load_workbook(workbook_path, read_only=True, data_only=True)
     try:
         sheet = workbook[sheet_name]
+        # This workbook stores an incorrect A1:A1 worksheet dimension.
         sheet.reset_dimensions()
         rows = sheet.iter_rows(values_only=True)
         headers = next(rows)
@@ -130,11 +128,11 @@ def _normalize_sheet(args: tuple[str, str]) -> list[dict[str, Any]]:
             interval_values = row[4:100]
             if len(interval_values) != 96:
                 raise ValueError(f"{sheet_name} row {row_number}: fewer than 96 interval cells")
-            if operating_date == date(2025, 3, 9) and any(
+            if operating_date == date(2019, 3, 10) and any(
                 value not in (None, "") for value in interval_values[8:12]
             ):
                 raise ValueError(f"{sheet_name} row {row_number}: expected M:P spring structural blanks")
-            dst_values = row[100:104] if operating_date == date(2025, 11, 2) else ()
+            dst_values = row[100:104] if operating_date == date(2019, 11, 3) else ()
             records.extend(normalize_row(operating_date, fuel_type, interval_values, interval_headers, dst_values))
         return records
     finally:
@@ -144,13 +142,13 @@ def _normalize_sheet(args: tuple[str, str]) -> list[dict[str, Any]]:
 def _sort_records(frame: pd.DataFrame) -> pd.DataFrame:
     sort_utc = pd.to_datetime(frame["timestamp_local"], format="ISO8601", utc=True)
     spring_gap = frame["timestamp_local"].str.startswith((
-        "2025-03-09T02:15:",
-        "2025-03-09T02:30:",
-        "2025-03-09T02:45:",
-        "2025-03-09T03:00:",
+        "2019-03-10T02:15:",
+        "2019-03-10T02:30:",
+        "2019-03-10T02:45:",
+        "2019-03-10T03:00:",
     )) & frame["generation_mwh"].isna()
     # Structural placeholders have no real instant; keep them before 03:15.
-    sort_utc.loc[spring_gap] = pd.Timestamp("2025-03-09T08:07:30Z")
+    sort_utc.loc[spring_gap] = pd.Timestamp("2019-03-10T08:07:30Z")
     return (
         frame.assign(_sort_utc=sort_utc)
         .sort_values(["_sort_utc", "timestamp_local", "fuel_type"], ignore_index=True)
@@ -158,12 +156,12 @@ def _sort_records(frame: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def normalize_2025(
+def normalize_2019(
     input_path: Path = DEFAULT_INPUT,
     output_path: Path = DEFAULT_OUTPUT,
     workers: int | None = None,
 ) -> pd.DataFrame:
-    """Create 2025 Parquet and publish only after persisted sampled QC passes."""
+    """Create 2019 Parquet and publish only after persisted sampled QC passes."""
     if not input_path.is_file():
         raise FileNotFoundError(input_path)
     jobs = [(str(input_path), sheet_name) for sheet_name in WORKSHEETS]
@@ -174,7 +172,7 @@ def normalize_2025(
     frame["generation_mwh"] = frame["generation_mwh"].astype("float64")
     frame = _sort_records(frame)
     frame.attrs["sampled_values_verified"] = write_parquet_with_qc(
-        frame, 2025, input_path, output_path
+        frame, 2019, input_path, output_path
     )
     return frame
 
@@ -185,7 +183,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--workers", type=int, default=None)
     args = parser.parse_args()
-    frame = normalize_2025(args.input, args.output, args.workers)
+    frame = normalize_2019(args.input, args.output, args.workers)
     print(json.dumps({
         "output": str(args.output),
         "rows": len(frame),

@@ -3,7 +3,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from scripts.normalize_ercot_fuel_mix_2014 import (
+from scripts.fuel_mix.normalize_ercot_fuel_mix_2014 import (
     _interval_minutes,
     _normalize_row,
     _parse_date_fuel,

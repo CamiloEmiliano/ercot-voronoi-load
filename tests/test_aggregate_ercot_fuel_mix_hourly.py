@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from scripts import aggregate_ercot_fuel_mix_hourly as fm
+from scripts.fuel_mix import aggregate_ercot_fuel_mix_hourly as fm
 
 
 def _synthetic_15m_year(year: int, *, fuels: tuple[str, ...] = ("Coal", "Wind")) -> pd.DataFrame:
