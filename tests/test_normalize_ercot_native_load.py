@@ -1,10 +1,7 @@
 from datetime import datetime, timedelta
-from pathlib import Path
-from zipfile import ZipFile
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from scripts.load import normalize_ercot_native_load as nl
 

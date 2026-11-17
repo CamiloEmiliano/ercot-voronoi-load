@@ -20,15 +20,13 @@ def _wide_frame() -> pd.DataFrame:
         "ADDTIME": ["2024-01-02", "2024-01-02"],
         "source_workbook": ["source.xlsx", "source.xlsx"],
         "source_sheet": ["Q1_2024", "Q1_2024"],
-    }
-    frame.update(
-        {
+        **{
             column: [float(index), float(index + 10)]
             for index, column in enumerate(
                 normalize_ercot_load.LOAD_SOURCE_INTERVAL_COLUMNS, start=1
             )
-        }
-    )
+        },
+    }
     return pd.DataFrame(frame)
 
 

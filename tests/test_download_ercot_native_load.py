@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from scripts.load import download_ercot_native_load as dl
 
 
