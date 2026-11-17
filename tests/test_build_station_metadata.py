@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from scripts.build_station_metadata import build_station_metadata
+from scripts.spatial.build_station_metadata import build_station_metadata
 
 
 def _write_weather_file(directory, state_code, rows):

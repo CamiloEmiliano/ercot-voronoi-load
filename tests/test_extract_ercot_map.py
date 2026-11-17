@@ -6,10 +6,10 @@ from pathlib import Path
 import pytest
 import shapefile
 
-from scripts.extract_ercot_map import extract_ercot_map
+from scripts.spatial.extract_ercot_map import extract_ercot_map
 
 
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "extract_ercot_map.py"
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "spatial" / "extract_ercot_map.py"
 
 
 def _write_subregion(writer, subregion, offset):

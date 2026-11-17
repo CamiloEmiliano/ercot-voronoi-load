@@ -10,7 +10,7 @@ from typing import Any
 import pandas as pd
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 STATE_CODES = ("tx", "nm", "ok", "ar", "la")
 REQUIRED_COLUMNS = ("station", "valid", "lon", "lat", "elevation")
 DEFAULT_OUTPUT = Path("station_metadata.parquet")

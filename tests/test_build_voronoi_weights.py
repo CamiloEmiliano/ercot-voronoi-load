@@ -7,7 +7,7 @@ import pytest
 from shapely.geometry import mapping, box
 
 
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "build_voronoi_weights.py"
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "spatial" / "build_voronoi_weights.py"
 SPEC = importlib.util.spec_from_file_location("build_voronoi_weights", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise ImportError(f"Unable to import Voronoi builder from {SCRIPT_PATH}")

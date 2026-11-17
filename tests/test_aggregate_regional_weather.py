@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "aggregate_regional_weather.py"
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "weather" / "aggregate_regional_weather.py"
 SPEC = importlib.util.spec_from_file_location("aggregate_regional_weather", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise ImportError(f"Unable to import regional aggregator from {SCRIPT_PATH}")

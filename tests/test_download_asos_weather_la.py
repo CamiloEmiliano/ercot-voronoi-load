@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "download_asos_weather_la.py"
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "weather" / "download_asos_weather_la.py"
 SPEC = importlib.util.spec_from_file_location("download_asos_weather_la", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise ImportError(f"Unable to import downloader from {SCRIPT_PATH}")

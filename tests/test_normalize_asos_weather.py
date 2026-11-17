@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "normalize_asos_weather.py"
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "weather" / "normalize_asos_weather.py"
 SPEC = importlib.util.spec_from_file_location("normalize_asos_weather", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise ImportError(f"Unable to import normalizer from {SCRIPT_PATH}")

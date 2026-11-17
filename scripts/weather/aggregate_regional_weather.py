@@ -10,7 +10,7 @@ from typing import Any
 
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_WEATHER = PROJECT_ROOT / "data/interim/weather_station_hourly"
 DEFAULT_WEIGHTS = PROJECT_ROOT / "data/interim/voronoi_weights/voronoi_weights.parquet"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/weather_regional_hourly"

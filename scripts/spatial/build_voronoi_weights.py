@@ -15,7 +15,7 @@ from scipy.spatial import Voronoi
 from shapely.geometry import Point, Polygon, shape
 from shapely.ops import transform, unary_union
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_STATIONS = PROJECT_ROOT / "data/interim/station_metadata/station_metadata.parquet"
 DEFAULT_BOUNDARY = PROJECT_ROOT / "data/interim/ercot_map/ercot_boundary.geojson"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/voronoi_weights/voronoi_weights.parquet"

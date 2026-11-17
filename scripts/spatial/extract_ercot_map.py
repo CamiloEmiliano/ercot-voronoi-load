@@ -10,7 +10,7 @@ from typing import Any
 import shapefile
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RAW_SHAPEFILE = PROJECT_ROOT / "data/raw/ercot_map/eGRID2023_Subregions.shp"
 DEFAULT_OUTPUT = Path("ercot_boundary.geojson")
 ERCOT_SUBREGION = "ERCT"

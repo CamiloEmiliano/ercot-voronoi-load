@@ -14,22 +14,14 @@ from typing import Any
 
 import pandas as pd
 
-try:
-    from source_contracts import (
-        ASOS_NUMERIC_COLUMNS,
-        ASOS_REQUIRED_COLUMNS,
-        parse_asos_valid,
-        validate_asos_columns,
-    )
-except ModuleNotFoundError:
-    from scripts.source_contracts import (
-        ASOS_NUMERIC_COLUMNS,
-        ASOS_REQUIRED_COLUMNS,
-        parse_asos_valid,
-        validate_asos_columns,
-    )
+from bayes_demand_fcst.contracts import (
+    ASOS_NUMERIC_COLUMNS,
+    ASOS_REQUIRED_COLUMNS,
+    parse_asos_valid,
+    validate_asos_columns,
+)
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 STATE_CODES = ("tx", "nm", "ok", "ar", "la")
 CSV_CHUNK_SIZE = 100_000
 MISSING_TOKENS = ("", "M", "NA", "N/A", "null", "NULL", "None")
