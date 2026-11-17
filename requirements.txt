@@ -13,3 +13,4 @@ pyshp>=2.3
 pyproj>=3.6
 shapely>=2.0
 dvc>=3.67
+python-dotenv>=1.0
