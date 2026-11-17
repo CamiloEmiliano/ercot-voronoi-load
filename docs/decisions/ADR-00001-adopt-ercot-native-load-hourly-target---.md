@@ -5,7 +5,7 @@
 - **Date**: 2026-11-17 04:32 UTC
 - **Status**: ACCEPTED
 - **Target Subsystem**: Load ingestion, fuel-mix aggregation, and Bayesian GAM forecasting scope (`scripts/`, `dvc.yaml`, `data/`)
-- **Linked Commits**: Pending implementation
+- **Linked Commits**: [`c1e0c9a`](../../scripts/query_ercot_system_demand.py), [`3624d47`](../../scripts/normalize_ercot_native_load.py)
 
 ---
 
