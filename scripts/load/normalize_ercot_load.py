@@ -10,24 +10,15 @@ from typing import Any
 
 import pandas as pd
 
-try:
-    from source_contracts import (
-        LOAD_INTERVAL_COLUMNS,
-        LOAD_INTERVAL_MINUTES,
-        LOAD_SOURCE_INTERVAL_COLUMNS,
-        LOAD_SOURCE_UNIT,
-        validate_load_profile_frame,
-    )
-except ModuleNotFoundError:
-    from scripts.source_contracts import (
-        LOAD_INTERVAL_COLUMNS,
-        LOAD_INTERVAL_MINUTES,
-        LOAD_SOURCE_INTERVAL_COLUMNS,
-        LOAD_SOURCE_UNIT,
-        validate_load_profile_frame,
-    )
+from bayes_demand_fcst.contracts import (
+    LOAD_INTERVAL_COLUMNS,
+    LOAD_INTERVAL_MINUTES,
+    LOAD_SOURCE_INTERVAL_COLUMNS,
+    LOAD_SOURCE_UNIT,
+    validate_load_profile_frame,
+)
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT = PROJECT_ROOT / "data/interim/ercot_backcast"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data/interim/load_profile_long"
 

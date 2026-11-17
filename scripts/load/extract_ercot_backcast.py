@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RAW_DIR = PROJECT_ROOT / "data/raw/ercot_backcast"
 QUARTER_SHEET_PATTERN = re.compile(r"^Q([1-4])_(20\d{2})$")
 YEAR_PATTERN = re.compile(r"\b(20\d{2})\b")

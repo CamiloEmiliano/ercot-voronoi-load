@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "extract_ercot_backcast.py"
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "load" / "extract_ercot_backcast.py"
 SPEC = importlib.util.spec_from_file_location("extract_ercot_backcast", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise ImportError(f"Unable to import extractor from {SCRIPT_PATH}")

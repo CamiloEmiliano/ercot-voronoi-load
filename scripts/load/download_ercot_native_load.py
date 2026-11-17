@@ -9,7 +9,7 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "data/raw/ercot_hourly_load"
 COURTESY_DELAY_SECONDS = 2.0
 RETRY_DELAYS_SECONDS = (10.0, 30.0, 60.0)

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts import download_ercot_native_load as dl
+from scripts.load import download_ercot_native_load as dl
 
 
 def test_archive_urls_cover_2014_through_2025():

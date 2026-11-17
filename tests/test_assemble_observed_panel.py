@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 
-SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "assemble_observed_panel.py"
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "panel" / "assemble_observed_panel.py"
 SPEC = importlib.util.spec_from_file_location("assemble_observed_panel", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise ImportError(f"Unable to import panel assembler from {SCRIPT_PATH}")

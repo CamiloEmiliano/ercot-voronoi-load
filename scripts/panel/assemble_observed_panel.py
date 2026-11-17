@@ -10,7 +10,7 @@ from typing import Any
 
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_LOAD = PROJECT_ROOT / "data/interim/load_hourly"
 DEFAULT_WEATHER = PROJECT_ROOT / "data/interim/weather_regional_hourly"
 DEFAULT_FUEL_MIX = PROJECT_ROOT / "data/interim/fuel_mix_hourly"

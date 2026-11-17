@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from scripts import query_ercot_system_demand as query
+from scripts.load import query_ercot_system_demand as query
 
 
 def test_query_archive_uses_local_credentials_and_preserves_response(monkeypatch):

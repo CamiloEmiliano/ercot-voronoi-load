@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from scripts import normalize_ercot_native_load as nl
+from scripts.load import normalize_ercot_native_load as nl
 
 
 def _synthetic_year_frame(year: int, *, legacy_schema: bool) -> pd.DataFrame:
