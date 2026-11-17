@@ -13,6 +13,7 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOAD = PROJECT_ROOT / "data/interim/load_hourly"
 DEFAULT_WEATHER = PROJECT_ROOT / "data/interim/weather_regional_hourly"
+DEFAULT_FUEL_MIX = PROJECT_ROOT / "data/interim/fuel_mix_hourly"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data/processed/ercot_hourly_panel"
 
 
@@ -34,8 +35,36 @@ def _validate_utc(frame: pd.DataFrame, label: str) -> pd.Series:
     return parsed
 
 
-def assemble_panel(load: pd.DataFrame, weather: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Validate and one-to-one join canonical load and regional weather."""
+def _pivot_fuel_mix_hourly(fuel_mix: pd.DataFrame) -> pd.DataFrame:
+    """Pivot long-form hourly fuel mix into one UTC row per hour with signed MWh columns."""
+    missing = sorted({"timestamp_utc", "fuel_type", "generation_mwh"} - set(fuel_mix.columns))
+    if missing:
+        raise ValueError(f"Hourly fuel mix is missing columns: {', '.join(missing)}")
+    work = fuel_mix.copy()
+    work["timestamp_utc"] = _validate_utc(work, "Hourly fuel mix")
+    work["generation_mwh"] = pd.to_numeric(work["generation_mwh"], errors="raise")
+    if work.duplicated(["timestamp_utc", "fuel_type"]).any():
+        raise ValueError("Hourly fuel mix contains duplicate (timestamp_utc, fuel_type) values")
+
+    wide = work.pivot(index="timestamp_utc", columns="fuel_type", values="generation_mwh")
+    wide.columns = [
+        f"fuel_{str(col).strip().lower().replace('-', '_')}_mwh" for col in wide.columns
+    ]
+    # Total generation across reported fuels for that hour; NaN if every fuel is NaN or incomplete-hour fuels are NaN.
+    fuel_cols = list(wide.columns)
+    wide["fuel_total_mwh"] = wide[fuel_cols].sum(axis=1, skipna=True, min_count=1)
+    if "observed_intervals" in work.columns:
+        min_obs = work.groupby("timestamp_utc")["observed_intervals"].min()
+        wide.loc[min_obs < 4, "fuel_total_mwh"] = float("nan")
+    return wide.reset_index()
+
+
+def assemble_panel(
+    load: pd.DataFrame,
+    weather: pd.DataFrame,
+    fuel_mix: pd.DataFrame | None = None,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Validate and one-to-one join canonical load, regional weather, and optional hourly fuel mix."""
     missing_load = sorted({"timestamp_utc", "load_mw"} - set(load.columns))
     if missing_load:
         raise ValueError(
@@ -56,7 +85,10 @@ def assemble_panel(load: pd.DataFrame, weather: pd.DataFrame) -> tuple[pd.DataFr
         raise ValueError("Regional weather contains duplicate timestamp_utc values")
 
     panel = load.merge(weather, on="timestamp_utc", how="inner", validate="one_to_one", sort=True)
-    report = {
+    if fuel_mix is not None:
+        fuel_wide = _pivot_fuel_mix_hourly(fuel_mix)
+        panel = panel.merge(fuel_wide, on="timestamp_utc", how="left", validate="one_to_one", sort=True)
+    report: dict[str, Any] = {
         "load_rows": int(len(load)),
         "weather_rows": int(len(weather)),
         "panel_rows": int(len(panel)),
@@ -65,14 +97,24 @@ def assemble_panel(load: pd.DataFrame, weather: pd.DataFrame) -> tuple[pd.DataFr
         "timestamp_min_utc": None if panel.empty else panel["timestamp_utc"].min().isoformat(),
         "timestamp_max_utc": None if panel.empty else panel["timestamp_utc"].max().isoformat(),
     }
+    if fuel_mix is not None:
+        report["fuel_mix_hours"] = int(fuel_mix["timestamp_utc"].nunique())
+        report["panel_rows_with_fuel_total"] = int(panel["fuel_total_mwh"].notna().sum())
     return panel, report
 
 
-def assemble_observed_panel(load_dir: Path, weather_dir: Path, output_dir: Path, overwrite: bool = False) -> dict[str, Any]:
+def assemble_observed_panel(
+    load_dir: Path,
+    weather_dir: Path,
+    output_dir: Path,
+    overwrite: bool = False,
+    fuel_mix_dir: Path | None = None,
+) -> dict[str, Any]:
     """Join canonical inputs and write a month-partitioned observed panel."""
     load = _read_dataset(load_dir, "canonical load")
     weather = _read_dataset(weather_dir, "regional weather")
-    panel, report = assemble_panel(load, weather)
+    fuel_mix = _read_dataset(fuel_mix_dir, "hourly fuel mix") if fuel_mix_dir is not None else None
+    panel, report = assemble_panel(load, weather, fuel_mix=fuel_mix)
     if output_dir.exists():
         existing = tuple(output_dir.rglob("*"))
         if existing and not overwrite:
@@ -94,6 +136,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--load", type=Path, default=DEFAULT_LOAD)
     parser.add_argument("--weather", type=Path, default=DEFAULT_WEATHER)
+    parser.add_argument("--fuel-mix", type=Path, default=None)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--overwrite", action="store_true")
     return parser.parse_args()
@@ -101,7 +144,13 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    report = assemble_observed_panel(args.load, args.weather, args.output, overwrite=args.overwrite)
+    report = assemble_observed_panel(
+        args.load,
+        args.weather,
+        args.output,
+        overwrite=args.overwrite,
+        fuel_mix_dir=args.fuel_mix,
+    )
     print(json.dumps(report, indent=2))
 
 

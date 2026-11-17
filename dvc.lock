@@ -418,3 +418,95 @@ stages:
       hash: md5
       md5: 411985149c1a40b33cedf7224e94f799
       size: 2991083
+  download_ercot_native_load:
+    cmd: .venv/bin/python scripts/download_ercot_native_load.py --execute
+    deps:
+    - path: scripts/download_ercot_native_load.py
+      hash: md5
+      md5: 284448c7dc51a2bd2d8746ac9a0541c3
+      size: 4590
+    outs:
+    - path: data/raw/ercot_hourly_load
+      hash: md5
+      md5: 2470efb488797613a129cf5489aa56eb.dir
+      size: 14579623
+      nfiles: 12
+  normalize_ercot_native_load:
+    cmd: .venv/bin/python scripts/normalize_ercot_native_load.py --overwrite
+    deps:
+    - path: data/raw/ercot_hourly_load
+      hash: md5
+      md5: 2470efb488797613a129cf5489aa56eb.dir
+      size: 14579623
+      nfiles: 12
+    - path: scripts/normalize_ercot_native_load.py
+      hash: md5
+      md5: 0f2fa086d978e183ba36e21885e75550
+      size: 17242
+    outs:
+    - path: data/interim/load_hourly
+      hash: md5
+      md5: 31e77af579fe6d9cf24c5b77ce871673.dir
+      size: 9854333
+      nfiles: 13
+  aggregate_fuel_mix_hourly:
+    cmd: .venv/bin/python scripts/aggregate_ercot_fuel_mix_hourly.py --overwrite
+    deps:
+    - path: data/interim/fuel_mix/fuel_mix_2014.parquet
+      hash: md5
+      md5: 995b980662b40f00b5ceffbb81434bd8
+      size: 2557758
+    - path: data/interim/fuel_mix/fuel_mix_2015.parquet
+      hash: md5
+      md5: bcb8d2f722fd226ca04d570b4bb9794f
+      size: 2510869
+    - path: data/interim/fuel_mix/fuel_mix_2016.parquet
+      hash: md5
+      md5: c6cde37a6f2df9a0aa86e438ed847e20
+      size: 2642701
+    - path: data/interim/fuel_mix/fuel_mix_2017.parquet
+      hash: md5
+      md5: 599eca81575f935224688412141cd7e1
+      size: 2655849
+    - path: data/interim/fuel_mix/fuel_mix_2018.parquet
+      hash: md5
+      md5: 6585d4db8105fa099a0c8f1944f1c663
+      size: 2657213
+    - path: data/interim/fuel_mix/fuel_mix_2019.parquet
+      hash: md5
+      md5: 2215298f91879d02edf50e479e18364c
+      size: 2660732
+    - path: data/interim/fuel_mix/fuel_mix_2020.parquet
+      hash: md5
+      md5: c220d47ebd6f96c0acd2d20f89d1ce07
+      size: 2688594
+    - path: data/interim/fuel_mix/fuel_mix_2021.parquet
+      hash: md5
+      md5: aaaf67c9336cd66d2b2ef4a17ae81c6d
+      size: 2698760
+    - path: data/interim/fuel_mix/fuel_mix_2022.parquet
+      hash: md5
+      md5: 3974994e9ccc8b7aec7dbe8c11f05798
+      size: 2952041
+    - path: data/interim/fuel_mix/fuel_mix_2023.parquet
+      hash: md5
+      md5: 411985149c1a40b33cedf7224e94f799
+      size: 2991083
+    - path: data/interim/fuel_mix/fuel_mix_2024.parquet
+      hash: md5
+      md5: a98224ec7b7611d8184d03af489e82a2
+      size: 3003522
+    - path: data/interim/fuel_mix/fuel_mix_2025.parquet
+      hash: md5
+      md5: 2bae024895110ce8ce2ccf924861791e
+      size: 2955065
+    - path: scripts/aggregate_ercot_fuel_mix_hourly.py
+      hash: md5
+      md5: 63dcd0aaa5dc17f010985dd357949226
+      size: 11646
+    outs:
+    - path: data/interim/fuel_mix_hourly
+      hash: md5
+      md5: 364be292c339a85b1ae55aed25ee11b6.dir
+      size: 9962174
+      nfiles: 13

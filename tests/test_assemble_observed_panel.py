@@ -78,3 +78,26 @@ def test_assemble_observed_panel_requires_both_inputs(tmp_path):
         assemble_observed_panel.assemble_observed_panel(
             tmp_path / "missing", tmp_path / "weather", tmp_path / "output"
         )
+
+def test_assemble_panel_joins_optional_hourly_fuel_mix():
+    fuel_mix = pd.DataFrame(
+        {
+            "timestamp_utc": [
+                "2024-01-01 00:00Z",
+                "2024-01-01 00:00Z",
+                "2024-01-01 01:00Z",
+                "2024-01-01 01:00Z",
+            ],
+            "fuel_type": ["Coal", "Gas-CC", "Coal", "Gas-CC"],
+            "generation_mwh": [40.0, 62.0, 45.0, 66.0],
+            "observed_intervals": [4, 4, 3, 4],
+        }
+    )
+
+    panel, report = assemble_observed_panel.assemble_panel(_load(), _weather(), fuel_mix=fuel_mix)
+    assert panel["fuel_coal_mwh"].tolist() == [40.0, 45.0]
+    assert panel["fuel_gas_cc_mwh"].tolist() == [62.0, 66.0]
+    assert panel.loc[0, "fuel_total_mwh"] == pytest.approx(102.0)
+    assert pd.isna(panel.loc[1, "fuel_total_mwh"])
+    assert report["fuel_mix_hours"] == 2
+    assert report["panel_rows_with_fuel_total"] == 1

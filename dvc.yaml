@@ -97,13 +97,45 @@ stages:
     outs:
     - data/interim/weather_regional_hourly
   assemble_observed_panel:
-    cmd: .venv/bin/python scripts/assemble_observed_panel.py --load data/interim/load_hourly --weather data/interim/weather_regional_hourly --output data/processed/ercot_hourly_panel --overwrite
+    cmd: .venv/bin/python scripts/assemble_observed_panel.py --load data/interim/load_hourly --weather data/interim/weather_regional_hourly --fuel-mix data/interim/fuel_mix_hourly --output data/processed/ercot_hourly_panel --overwrite
     deps:
     - data/interim/load_hourly
     - data/interim/weather_regional_hourly
+    - data/interim/fuel_mix_hourly
     - scripts/assemble_observed_panel.py
     outs:
     - data/processed/ercot_hourly_panel
+  download_ercot_native_load:
+    cmd: .venv/bin/python scripts/download_ercot_native_load.py --execute
+    deps:
+    - scripts/download_ercot_native_load.py
+    outs:
+    - data/raw/ercot_hourly_load
+  normalize_ercot_native_load:
+    cmd: .venv/bin/python scripts/normalize_ercot_native_load.py --overwrite
+    deps:
+    - data/raw/ercot_hourly_load
+    - scripts/normalize_ercot_native_load.py
+    outs:
+    - data/interim/load_hourly
+  aggregate_fuel_mix_hourly:
+    cmd: .venv/bin/python scripts/aggregate_ercot_fuel_mix_hourly.py --overwrite
+    deps:
+    - data/interim/fuel_mix/fuel_mix_2014.parquet
+    - data/interim/fuel_mix/fuel_mix_2015.parquet
+    - data/interim/fuel_mix/fuel_mix_2016.parquet
+    - data/interim/fuel_mix/fuel_mix_2017.parquet
+    - data/interim/fuel_mix/fuel_mix_2018.parquet
+    - data/interim/fuel_mix/fuel_mix_2019.parquet
+    - data/interim/fuel_mix/fuel_mix_2020.parquet
+    - data/interim/fuel_mix/fuel_mix_2021.parquet
+    - data/interim/fuel_mix/fuel_mix_2022.parquet
+    - data/interim/fuel_mix/fuel_mix_2023.parquet
+    - data/interim/fuel_mix/fuel_mix_2024.parquet
+    - data/interim/fuel_mix/fuel_mix_2025.parquet
+    - scripts/aggregate_ercot_fuel_mix_hourly.py
+    outs:
+    - data/interim/fuel_mix_hourly
   normalize_fuel_mix_2014:
     cmd: .venv/bin/python scripts/normalize_ercot_fuel_mix_2014.py --workers 1
     deps:
