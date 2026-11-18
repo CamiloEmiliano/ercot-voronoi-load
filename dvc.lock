@@ -2,8 +2,8 @@ schema: '2.0'
 stages:
   download_weather_tx:
     cmd: mkdir -p data/raw/weather_tx_asos && cd data/raw/weather_tx_asos && 
-      ../../../.venv/bin/python ../../../scripts/weather/download_asos_weather_tx.py 
-      --execute
+      ../../../.venv/bin/python 
+      ../../../scripts/weather/download_asos_weather_tx.py --execute
     deps:
     - path: scripts/weather/download_asos_weather_tx.py
       hash: md5
@@ -12,9 +12,9 @@ stages:
     outs:
     - path: data/raw/weather_tx_asos
       hash: md5
-      md5: c4f7d620e592f6b5dede0b90a3ab77c6.dir
-      size: 373715070
-      nfiles: 15
+      md5: 9bdaedfff77f762b89681488fd06a7bc.dir
+      size: 3485142609
+      nfiles: 144
   extract_ercot_map:
     cmd: cd data/interim/ercot_map && ../../../.venv/bin/python 
       ../../../scripts/spatial/extract_ercot_map.py
@@ -111,38 +111,38 @@ stages:
     deps:
     - path: data/raw/weather_ar_asos
       hash: md5
-      md5: f70f5220ea126066e198b1e7c6326352.dir
-      size: 479426683
+      md5: d146f90d2cc9e09f6b7ff736392abe67.dir
+      size: 508898639
       nfiles: 144
     - path: data/raw/weather_la_asos
       hash: md5
-      md5: ce71f6fd815495112acdb79259c9e87b.dir
-      size: 574715872
+      md5: 3ed27f82795011eaa4302671e6572971.dir
+      size: 614209290
       nfiles: 144
     - path: data/raw/weather_nm_asos
       hash: md5
-      md5: 8c3cf14d786ee056ece7f80f58e2a877.dir
-      size: 520313694
+      md5: d97fd0cdf03328ea613764bfaf64e4e2.dir
+      size: 556037602
       nfiles: 144
     - path: data/raw/weather_ok_asos
       hash: md5
-      md5: 97252005b099160ed3a4a8446212aa00.dir
-      size: 1018249358
+      md5: 02023e8ba53d27aedc79fe700d3dc2ca.dir
+      size: 1086165628
       nfiles: 144
     - path: data/raw/weather_tx_asos
       hash: md5
-      md5: 00b6a836fb121286c019aab3c956105c.dir
-      size: 3250750373
+      md5: 9bdaedfff77f762b89681488fd06a7bc.dir
+      size: 3485142609
       nfiles: 144
     - path: scripts/spatial/build_station_metadata.py
       hash: md5
-      md5: 9f5fd747e19a6d50880153ce77bf395c
+      md5: e59a2cb9f23a7adf5600599d550ca8b0
       size: 4380
     outs:
     - path: data/interim/station_metadata/station_metadata.parquet
       hash: md5
-      md5: 27578c761551bf733e155d83734a11e9
-      size: 15010
+      md5: 64a212d77a4346b5ae21929c40105441
+      size: 15020
   build_voronoi_weights:
     cmd: .venv/bin/python scripts/spatial/build_voronoi_weights.py --stations 
       data/interim/station_metadata/station_metadata.parquet --boundary 
@@ -155,8 +155,8 @@ stages:
       size: 33419754
     - path: data/interim/station_metadata/station_metadata.parquet
       hash: md5
-      md5: 27578c761551bf733e155d83734a11e9
-      size: 15010
+      md5: 64a212d77a4346b5ae21929c40105441
+      size: 15020
     - path: scripts/spatial/build_voronoi_weights.py
       hash: md5
       md5: 62c4c6a7472cffacd576675e7fd46e83
