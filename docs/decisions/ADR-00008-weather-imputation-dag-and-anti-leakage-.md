@@ -36,11 +36,11 @@ Govern the implementation of [`ADR-00003`](ADR-00003-spatiotemporal-kriging-grou
 
 ```mermaid
 flowchart TD
-    P0["Pass 0: Raw CSV Stream -> Clean Store<br/>Single read of 720 CSVs; bounds QC, SLP wrap filter,<br/>12k-ft gate, okta encode, dwpf prefill, dedup"]
-    P1["Pass 1: Frozen In-Sample Calibration<br/>Strictly t <= train_end_utc: Fourier harmonics,<br/>delta_p OLS, variograms, p01i zero_rate"]
-    P2["Pass 2: Primary Hourly Cubes<br/>1-yr windows with causal -24h buffer:<br/>Group A (tmpf, dwpf, feel_diff -> relh, feel, tmpf_12h)<br/>Group B1 (alti) | Group C1 (p01i hurdle)"]
-    P3["Pass 3: Conditioned Auxiliary Cubes<br/>Same 1-yr window in RAM:<br/>Group B2 (delta_p -> mslp) | Group C2 (vsby + fog guard)<br/>Group D (cloud_frac + rain-cloud floor)"]
-    P4["Pass 4: Voronoi Spatial Aggregation<br/>Statewide ERCT + 8 weather zones:<br/>9 features, mslp_tendency_3h, uncertainty summaries"]
+    P0["Pass 0: Raw CSV Stream to Clean Store<br/>Single read of 720 CSVs<br/>QC, wrap/gate, okta, dwpf, dedup"]
+    P1["Pass 1: Frozen In-Sample Calibration<br/>Strictly t <= train_end_utc<br/>Harmonics, delta_p OLS, variograms"]
+    P2["Pass 2: Primary Hourly Cubes<br/>1-yr window, -24h causal buffer<br/>Group A: tmpf, dwpf, feel_diff<br/>Group B1: alti | Group C1: p01i"]
+    P3["Pass 3: Conditioned Auxiliary Cubes<br/>Same 1-yr window in RAM<br/>Group B2: mslp | Group C2: vsby<br/>Group D: cloud_frac + rain floor"]
+    P4["Pass 4: Voronoi Spatial Aggregation<br/>ERCT + 8 weather zones<br/>9 features + mslp_tendency_3h"]
 
     P0 --> P1 --> P2 --> P3 --> P4
 ```
