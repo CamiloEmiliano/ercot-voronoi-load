@@ -25,34 +25,44 @@ Empirical inspection of raw `TX` ASOS observations (`tx_asos_land_2014_01.csv`) 
 
 ## 3. Considered Alternatives & Rejection Rationale
 - **Alternative A: Keep `skyc1` and `skyl1` dropped from regional aggregation**. Rejected because it discards an observed cloud-cover proxy (`skyc1`) directly relevant to 2018–2025 solar/net-load afternoon demand profiles.
-- **Alternative B: Unconditionally krige both `skyc1` (encoded) and `skyl1` across all hours**. Rejected because `skyl1` is structurally undefined when `skyc1 == "CLR"` and adds negligible regional demand signal beyond `cloud_frac`, `tmpf`, and `dwpf`.
-- **Alternative C: Retain unadjusted manual high-cloud layers (`skyl1 > 12,000` ft) as equivalent to low overcast**. Rejected because rural automated stations physically cannot see clouds above `12,000` ft, introducing systematic staffed-airport vs. rural-AWOS bias.
+- **Alternative B: Two-pass imputation that also kriges `skyl1` (`log(skyl1 + 50)`) and round-trips continuous `cloud_frac` back into categorical `skyc1` strings before dropping both at Stage 3**. Rejected because `skyl1` is structurally undefined on clear skies (~70%+ of Texas hours), adds negligible regional demand signal beyond `cloud_frac`, `tmpf`, and `dwpf`, hits empty-neighbor (`N_cloudy == 0`) edge cases on isolated `FEW` clouds, and wastes ~50% of Group D compute and 2 Parquet columns on artifacts immediately discarded at regional aggregation. `skyl1`'s sole physical role here is gating raw observations at the `12,000-ft` sensor horizon.
+- **Alternative C: Retain or merely halve manual high-cloud layers (`skyl1 > 12,000` ft) instead of reclassifying to `CLR`**. Rejected because rural automated ceilometers report `0.00` (`CLR`) under the exact same high cirrus sheet, so retaining or halving staffed-airport manual layers (`20,000–35,000` ft) still injects `+0.22` to `+0.50` urban cloud bullseyes across surrounding rural cells.
 
 ## 4. Decision Outcome
-Adopt **numeric okta encoding, 12,000-ft ceilometer harmonization, and bounded ST-Kriging** for **Group D (`skyc1`, `skyl1`)**:
+Restructure **Group D (`skyc1`, `skyl1`)** into a streamlined, **single-variable `cloud_frac` pipeline** where `skyl1` serves strictly as a raw sensor-horizon validation gate before being dropped:
 
-1. **Encode `skyc1` (with `.str.strip()`) to Numeric `cloud_frac` $\in [0.0,\, 1.0]$**:
-   - `CLR`, `SKC`, `NCD`, `NSC` → `0.00` ($0/8$)
-   - `FEW` → `0.1875` ($1.5/8$)
-   - `SCT` → `0.4375` ($3.5/8$)
-   - `BKN` → `0.75` ($6/8$)
-   - `OVC`, `VV` → `1.00` ($8/8$)
-   - Missing / unrecognized codes remain `NaN`.
-2. **Harmonize the 12,000-ft Ceilometer Cap**:
-   - Standardize high-altitude manual augmentations where numeric `skyl1 > 12000` ft to `0.00` (clear below the 12,000-ft automated sensor horizon) — or flag and exclude/down-weight them consistently — so staffed airports and automated ASOS/AWOS sites observe the same physical cloud-base ceiling domain (recording harmonized row counts in `quality_report.json`).
-3. **Temporal Alignment & Local Space-Time Kriging for `cloud_frac`**:
-   - Align raw observations onto `H:00Z` via **nearest valid observation within $\pm 30\text{ min}$** (or linear interpolation on `cloud_frac`).
-   - Impute remaining missing station-hours via **Local Space-Time Kriging** on `cloud_frac` with moderate mesoscale correlation lengths ($\ell_s \approx 80\text{–}150\text{ km}$, $\ell_t \approx 3\text{–}6\text{ hr}$), strictly clamped to $[0.0,\, 1.0]$.
-4. **Promote `cloud_frac_regional` & Drop `skyl1` from Stage 3**:
-   - Add `cloud_frac` to `WEATHER_VARIABLES` in [`scripts/weather/aggregate_regional_weather.py`](../../scripts/weather/aggregate_regional_weather.py) so `weather_regional_hourly` and `ercot_hourly_panel` carry `cloud_frac_regional` and `cloud_frac_coverage`.
-   - Leave `skyl1` omitted from Stage 3 regional aggregation (if retained at Stage 2 station level, `skyl1` may only be kriged in $\log(\text{skyl1})$ space conditioned on `cloud_frac > 0` and left `NaN` wherever `cloud_frac == 0`).
+1. **Step 1 — Joint Raw Validation, Ceilometer Horizon Gate & Okta Encoding**:
+   *(Ordered strictly so sensor decoder glitches never corrupt valid `skyc1` reports:)*
+   - **Strip & Parse**: Normalize `skyc1` via `.str.strip()` (handling trailing whitespace such as `'VV '`) and parse numeric `skyl1`.
+   - **Mask Corrupt `skyl1` Heights First**: Set numeric `skyl1 < 0` or `skyl1 > 35,000 ft` (e.g., `95,000 ft` decoder glitches observed in `tx_asos_land_2023_07.csv`) to `NaN` *before* applying the ceilometer horizon rule, and clear any spurious non-null `skyl1` on raw clear (`CLR`/`SKC`/`NCD`/`NSC`) rows.
+   - **Enforce Uniform `12,000-ft` Ceilometer Horizon**: Where valid `skyl1` satisfies `12,000 < skyl1 <= 35,000 ft` (`~3,660 m`), reclassify `skyc1` deterministically to `'CLR'` so staffed airports and automated rural ASOS/AWOS stations share the identical `[0, 12,000 ft]` cloud-detection column (logging reclassified row counts to `quality_report.json`).
+   - **Encode `skyc1` to Numeric `cloud_frac` $\in [0.0,\, 1.0]$ & Drop Raw Sky Columns**:
+     - `CLR`, `SKC`, `NCD`, `NSC` $\to \mathbf{0.00}$
+     - `FEW` $\to \mathbf{0.1875}$
+     - `SCT` $\to \mathbf{0.4375}$
+     - `BKN` $\to \mathbf{0.75}$
+     - `OVC`, `VV` $\to \mathbf{1.00}$
+     - Missing (`M` / blank / unrecognized) $\to \text{NaN}$
+     - Drop string `skyc1` and height `skyl1` immediately after encoding (do not carry them into the `33.35M`-row hourly station cube).
+
+2. **Step 2 — Local Temporal Alignment onto `HH:00 UTC` & Hourly Provenance**:
+   - **Short bracket ($\le 45\text{ min}$ at the same station)**: Evaluate time-linear interpolation when bracketed on both sides within $\le 45\text{ min}$ (smoothing single-cloud laser-beam step jitter across `:53`/`:55`), falling back to causal nearest valid observation ($t \le t_0$) when only one side is present within $\le 45\text{ min}$.
+   - **Hourly Provenance (`uint8`)**: Record provenance directly on the target `HH:00 UTC` grid (`0 = exact_on_hour`, `2 = local_temporal`, `3 = spatiotemporal_krig`), avoiding raw-to-hourly index mismatches.
+
+3. **Step 3 — Longer-Outage Spatial Imputation, Clamping & Precipitation Consistency**:
+   - **Uniform-Sky Vectorized Short-Circuit**: On remaining `NaN` station-hours, if all active neighbors in the local space-time window equal `0.00` (all clear, ~70% of Texas hours) or all equal `1.00` (solid overcast), assign `0.00` or `1.00` directly in $O(1)$ without invoking a matrix solve.
+   - **Local Ordinary Space-Time Kriging / Kernel Interpolation**: On mixed-sky outages, run local Ordinary Space-Time Kriging (Exponential kernel $\nu = 1/2$, scales $\ell_s \approx 80\text{–}150\text{ km}$, $\ell_t \approx 3\text{–}6\text{ hr}$, solved via SPD Cholesky + Schur complement with okta-quantization diagonal nugget $\sigma_{\text{nug}}^2 \approx 0.01$, or Space-Time IDW fallback) on `cloud_frac` (without Fourier harmonic drift subtraction).
+   - **Bounds Clamp & Precipitation Cloud Floor**:
+     1. Clamp strictly to $[0.0,\, 1.0]$: $\widehat{\text{cloud\_frac}} \leftarrow \operatorname{clip}(\widehat{\text{cloud\_frac}},\, 0.0,\, 1.0)$.
+     2. Enforce physical rain-cloud consistency where imputed: if completed `p01i` ([`ADR-00005`](ADR-00005-bounded-interpolation-group-c-precip-vis.md)) indicates active measurable rainfall ($\widehat{\text{p01i}} \ge 0.05\text{ in/hr}$), enforce $\widehat{\text{cloud\_frac}} \leftarrow \max(\widehat{\text{cloud\_frac}},\, 0.75)$ (`BKN`/`OVC`).
+   - **Regional & Weather-Zone Aggregation**: Aggregate `cloud_frac` across Voronoi weights $W$ (statewide and per weather zone under [`ADR-00007`](ADR-00007-coastline-and-ercot-weather-zone-layers-.md)) into `cloud_frac_regional` and `cloud_frac_coverage`.
 
 ## 5. Invariants & Guardrails
-- **Bounded Cloud Fraction**: Every output `cloud_frac` MUST satisfy $0.0 \le \widehat{\text{cloud\_frac}} \le 1.0$.
-- **Strict String Normalization**: `skyc1` codes MUST be `.str.strip()`-normalized prior to mapping (handling padded tokens such as `'VV '`).
-- **No Unconditional `skyl1` Imputation**: `skyl1` MUST NEVER be kriged where `cloud_frac == 0` (or `skyc1 == "CLR"`).
-- **Sensor-Horizon Consistency**: High-altitude manual reports (`skyl1 > 12,000` ft) MUST be treated consistently across staffed and automated stations rather than treated as equivalent to low-level solar-blocking overcast.
+- **QC Before Horizon Gating**: Corrupt `skyl1` heights (`< 0` or `> 35,000 ft`) MUST be masked to `NaN` *prior* to evaluating `12,000 < skyl1 <= 35,000 ft` so garbled height numbers never overwrite cloudy `skyc1` observations to `'CLR'`.
+- **Single Uniform `12,000-ft` Policy**: Valid `12,000 < skyl1 <= 35,000 ft` layers MUST be reclassified to `'CLR'` (`0.00`) uniformly across all stations — never left unadjusted or partially weighted.
+- **No Dead-End `skyl1` / String `skyc1` Cube Columns**: `skyl1` and categorical `skyc1` MUST NOT be kriged or persisted in `weather_station_hourly` or `weather_regional_hourly`; only bounded numeric `cloud_frac` $\in [0.0,\, 1.0]$ is carried forward.
+- **Strict String Normalization & Precipitation Consistency**: `skyc1` tokens MUST be `.str.strip()`-normalized prior to mapping, and imputed station-hours with $\widehat{\text{p01i}} \ge 0.05\text{ in/hr}$ MUST satisfy $\widehat{\text{cloud\_frac}} \ge 0.75$.
 
 ## 6. Consequences & Downstream Impact
-- **Positive / Guarantees**: Unlocks a bounded, spatially consistent regional cloud-cover feature (`cloud_frac_regional`) for 2018–2025 behind-the-meter solar / net-load modeling while eliminating staffed-airport 12,000-ft ceilometer bias and `skyl1` clear-sky fabrication.
-- **Negative / Trade-offs**: Expands the regional weather schema from 8 to 9 numeric variables (`cloud_frac_regional` + `cloud_frac_coverage`); low `FEW` layers can still mask higher `OVC` decks in single-layer `skyc1`, which is an inherent limitation of the single-layer ASOS archive schema.
+- **Positive / Guarantees**: Cuts Group D implementation complexity and runtime roughly in half by eliminating unused `skyl1` kriging and string round-tripping; prevents `> 35,000 ft` decoder glitches (such as `95,000 ft` in July 2023 TX) from corrupting `cloud_frac`; eliminates staffed-airport cirrus bullseyes via a single deterministic `12,000-ft` rule; delivers a clean, bounded `cloud_frac_regional` covariate for 2018–2025 solar/net-load GAMs.
+- **Negative / Trade-offs**: Expands the regional weather schema from 8 to 9 numeric variables (`cloud_frac_regional` + `cloud_frac_coverage`); drops cloud-base altitude (`skyl1`) after raw horizon gating; low `FEW` layers can still mask higher `OVC` decks below `12,000 ft` due to the single-layer `skyc1` archive schema.
