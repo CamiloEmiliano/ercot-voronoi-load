@@ -29,28 +29,43 @@
 - **Alternative C: Re-run full 317-station kriging from scratch inside every downstream GAM cross-validation fold**. Rejected as computationally prohibitive (~`33.35M` station-hours per variable) and unnecessary once neighborhood lookups are strictly causal ($t_{\text{obs}} \le t_0$) and global drift/variogram parameters are frozen on the pre-validation training window.
 
 ## 4. Decision Outcome
-Govern the implementation of [`ADR-00003`](ADR-00003-spatiotemporal-kriging-group-a-weather--.md)–[`ADR-00007`](ADR-00007-coastline-and-ercot-weather-zone-layers-.md) through a **unified 5-Pass Horizontal Execution DAG** paired with **two mandatory anti-leakage rules**:
+Govern the implementation of [`ADR-00003`](ADR-00003-spatiotemporal-kriging-group-a-weather--.md)–[`ADR-00007`](ADR-00007-coastline-and-ercot-weather-zone-layers-.md) through a **cross-group dependency DAG** orchestrated in five execution passes, paired with **two mandatory anti-leakage rules**. The variable-group ADRs are specifications, not a sequential `00003 -> 00004 -> 00005 -> ...` implementation order. Incremental release slicing, package/test/DVC cutover gates, and acceptance of those implementation increments are governed separately by [`ADR-00009`](ADR-00009-incremental-weather-imputation-delivery-.md).
 
-### A. Unified 5-Pass Execution DAG
-*(Prerequisite: [`ADR-00007`](ADR-00007-coastline-and-ercot-weather-zone-layers-.md) static spatial artifacts — `dist_coast_km`, `weather_zone`, `voronoi_weights.parquet`, and `voronoi_weights_by_zone.parquet` — are materialized first; static geography is time-invariant.)*
+### A. Cross-Group Implementation DAG
+The diagram's eight nodes are **dependency tasks**, while the five-pass grouping below describes how those tasks are orchestrated and materialized in DVC. Tasks 3, 4, and 5 split the calibration pass into base calibration, causal training replay, and dependent calibration because the Group B $\Delta P$ model requires Group A $\text{tmpf}_{12\text{h}}$.
 
 ```mermaid
 %%{init: {'layout': 'dagre', 'flowchart': {'htmlLabels': false, 'useMaxWidth': false, 'wrappingWidth': 300, 'minNodeWidth': 300, 'nodeSpacing': 30, 'rankSpacing': 30, 'padding': 20}}}%%
 flowchart TD
-    P0["Pass 0: Raw Ingestion & Cleaning"]
-    P1["Pass 1: Frozen In-Sample Calibration"]
-    P2["Pass 2: Primary Hourly Cubes"]
-    P3["Pass 3: Conditioned Auxiliary Cubes"]
-    P4["Pass 4: Voronoi Spatial Aggregation"]
+    S["1. ADR-00007: Spatial prerequisites"]
+    C["2. Shared infrastructure and clean store"]
+    B["3. Base calibration: Group A + alti"]
+    T["4. Causal training replay: Group A tmpf_12h"]
+    D["5. Dependent calibration: delta_p"]
+    P["6. Primary cubes: Group A, alti, p01i"]
+    A["7. Conditional cubes: mslp, vsby, cloud_frac"]
+    R["8. Regional and zone aggregation"]
 
-    P0 --> P1 --> P2 --> P3 --> P4
+    S --> C --> B --> T --> D
+    C --> P
+    D --> A
+    T --> A
+    P --> A --> R
+    S --> R
 ```
 
-- **Pass 0 (Raw Ingestion & Cleaning)**: Single read of 720 CSVs; bounds QC, METAR `SLP` wrap filter, 12,000-ft ceilometer gate, okta encoding, algebraic `dwpf` prefill, and deduplication.
-- **Pass 1 (Frozen In-Sample Calibration)**: Strictly on $t \le \text{train\_end\_utc}$: station Fourier harmonics (`tmpf`, `dwpf`, `alti`), global $\Delta P$ OLS, empirical variograms, and `p01i` `zero_rate`.
-- **Pass 2 (Primary Hourly Cubes)**: Rolling 1-year windows with causal `-24h` lookback buffer: Group A (`tmpf`, `dwpf`, `feel_diff` $\to$ `relh`, `feel`, `tmpf_12h`), Group B1 (`alti`), Group C1 (`p01i` hurdle).
-- **Pass 3 (Conditioned Auxiliary Cubes)**: Same 1-year window in RAM: Group B2 ($\Delta P \to \text{mslp}$), Group C2 (`vsby` + dry-air fog guard), Group D (`cloud_frac` + rain floor).
-- **Pass 4 (Voronoi Spatial Aggregation)**: Statewide ERCT + 8 ERCOT weather zones: 9 regional features + `mslp_tendency_3h` and uncertainty summaries.
+| DAG Node | Execution Phase | Governing ADRs and Scope |
+|---|---|---|
+| 1. Spatial prerequisites | Pre-pipeline spatial stage | [`ADR-00007`](ADR-00007-coastline-and-ercot-weather-zone-layers-.md): coastline, weather zones, station covariates, statewide and per-zone Voronoi weights. |
+| 2. Shared infrastructure and clean store | Pass 0 | [`ADR-00008`](ADR-00008-weather-imputation-dag-and-anti-leakage-.md), with raw validation and physical pre-fills specified by [`ADR-00003`](ADR-00003-spatiotemporal-kriging-group-a-weather--.md)–[`ADR-00006`](ADR-00006-cloud-fraction-kriging-group-d-sky-cover.md): one raw CSV read, clean irregular station store, provenance, deduplication, causal indexing. |
+| 3. Base calibration | Pass 1, base calibration | [`ADR-00003`](ADR-00003-spatiotemporal-kriging-group-a-weather--.md) harmonic/variogram calibration and primary `alti` calibration from [`ADR-00004`](ADR-00004-spatiotemporal-kriging-group-b-pressure-.md), using $t \le \text{train\_end\_utc}$. |
+| 4. Causal Group A replay | Pass 1, prerequisite replay | [`ADR-00003`](ADR-00003-spatiotemporal-kriging-group-a-weather--.md) under [`ADR-00008`](ADR-00008-weather-imputation-dag-and-anti-leakage-.md): generate causal Group A outputs on the training window, including $\text{tmpf}_{12\text{h}}$. |
+| 5. Dependent calibration | Pass 1, dependent calibration | [`ADR-00004`](ADR-00004-spatiotemporal-kriging-group-b-pressure-.md): fit the $\Delta P$ physical regression and residual variogram only after causal Group A $\text{tmpf}_{12\text{h}}$ exists. |
+| 6. Primary cubes | Pass 2 | [`ADR-00003`](ADR-00003-spatiotemporal-kriging-group-a-weather--.md) Group A, [`ADR-00004`](ADR-00004-spatiotemporal-kriging-group-b-pressure-.md) primary `alti`, and [`ADR-00005`](ADR-00005-bounded-interpolation-group-c-precip-vis.md) `p01i`; these branches are independent once Pass 1 artifacts exist. |
+| 7. Conditional cubes | Pass 3 | [`ADR-00004`](ADR-00004-spatiotemporal-kriging-group-b-pressure-.md) $\Delta P \to \text{mslp}$, [`ADR-00005`](ADR-00005-bounded-interpolation-group-c-precip-vis.md) `vsby`, and [`ADR-00006`](ADR-00006-cloud-fraction-kriging-group-d-sky-cover.md) `cloud_frac`; each consumes its required completed primary cube. |
+| 8. Regional and zone aggregation | Pass 4 | Outputs from [`ADR-00003`](ADR-00003-spatiotemporal-kriging-group-a-weather--.md)–[`ADR-00006`](ADR-00006-cloud-fraction-kriging-group-d-sky-cover.md), aggregated with statewide and per-zone weights from [`ADR-00007`](ADR-00007-coastline-and-ercot-weather-zone-layers-.md). |
+
+[`ADR-00008`](ADR-00008-weather-imputation-dag-and-anti-leakage-.md) is not a separate box because it governs the arrows and boundaries across the full graph: causal observation eligibility, frozen calibration cutoffs, window overlap, shared solvers, provenance, and DVC pass ordering.
 
 ### B. Strict Causal Filtering Rule (`t_obs <= t_0`) — Default Operational Mode
 For every target hour $t_0$ (`HH:00:00 UTC`) across `2014-01-01T07:00:00Z`–`2026-01-01T06:00:00Z`:
