@@ -35,13 +35,13 @@ Govern the implementation of [`ADR-00003`](ADR-00003-spatiotemporal-kriging-grou
 *(Prerequisite: [`ADR-00007`](ADR-00007-coastline-and-ercot-weather-zone-layers-.md) static spatial artifacts — `dist_coast_km`, `weather_zone`, `voronoi_weights.parquet`, and `voronoi_weights_by_zone.parquet` — are materialized first; static geography is time-invariant.)*
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '12px' }, 'flowchart': { 'nodeSpacing': 20, 'rankSpacing': 30, 'padding': 20 }}}%%
+%%{init: {'layout': 'dagre', 'flowchart': {'htmlLabels': false, 'useMaxWidth': false, 'wrappingWidth': 300, 'minNodeWidth': 300, 'nodeSpacing': 30, 'rankSpacing': 30, 'padding': 20}}}%%
 flowchart TD
-    P0("Pass 0<br/>Clean")
-    P1("Pass 1<br/>Calibrate")
-    P2("Pass 2<br/>Primary")
-    P3("Pass 3<br/>Auxiliary")
-    P4("Pass 4<br/>Voronoi")
+    P0["Pass 0: Raw Ingestion & Cleaning"]
+    P1["Pass 1: Frozen In-Sample Calibration"]
+    P2["Pass 2: Primary Hourly Cubes"]
+    P3["Pass 3: Conditioned Auxiliary Cubes"]
+    P4["Pass 4: Voronoi Spatial Aggregation"]
 
     P0 --> P1 --> P2 --> P3 --> P4
 ```
