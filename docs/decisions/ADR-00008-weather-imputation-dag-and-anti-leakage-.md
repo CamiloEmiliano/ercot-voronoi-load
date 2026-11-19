@@ -36,14 +36,20 @@ Govern the implementation of [`ADR-00003`](ADR-00003-spatiotemporal-kriging-grou
 
 ```mermaid
 flowchart TD
-    P0["Pass 0: Raw CSV Stream to Clean Store<br/>Single read of 720 CSVs<br/>QC, wrap/gate, okta, dwpf, dedup"]
-    P1["Pass 1: Frozen In-Sample Calibration<br/>Strictly t <= train_end_utc<br/>Harmonics, delta_p OLS, variograms"]
-    P2["Pass 2: Primary Hourly Cubes<br/>1-yr window, -24h causal buffer<br/>Group A: tmpf, dwpf, feel_diff<br/>Group B1: alti | Group C1: p01i"]
-    P3["Pass 3: Conditioned Auxiliary Cubes<br/>Same 1-yr window in RAM<br/>Group B2: mslp | Group C2: vsby<br/>Group D: cloud_frac + rain floor"]
-    P4["Pass 4: Voronoi Spatial Aggregation<br/>ERCT + 8 weather zones<br/>9 features + mslp_tendency_3h"]
+    P0["Pass 0: Ingest & Clean"]
+    P1["Pass 1: Freeze Parameters"]
+    P2["Pass 2: Primary Variables"]
+    P3["Pass 3: Auxiliary Variables"]
+    P4["Pass 4: Voronoi Aggregation"]
 
     P0 --> P1 --> P2 --> P3 --> P4
 ```
+
+- **Pass 0 (Raw Ingestion & Cleaning)**: Single read of 720 CSVs; bounds QC, METAR `SLP` wrap filter, 12,000-ft ceilometer gate, okta encoding, algebraic `dwpf` prefill, and deduplication.
+- **Pass 1 (Frozen In-Sample Calibration)**: Strictly on $t \le \text{train\_end\_utc}$: station Fourier harmonics (`tmpf`, `dwpf`, `alti`), global $\Delta P$ OLS, empirical variograms, and `p01i` `zero_rate`.
+- **Pass 2 (Primary Hourly Cubes)**: Rolling 1-year windows with causal `-24h` lookback buffer: Group A (`tmpf`, `dwpf`, `feel_diff` $\to$ `relh`, `feel`, `tmpf_12h`), Group B1 (`alti`), Group C1 (`p01i` hurdle).
+- **Pass 3 (Conditioned Auxiliary Cubes)**: Same 1-year window in RAM: Group B2 ($\Delta P \to \text{mslp}$), Group C2 (`vsby` + dry-air fog guard), Group D (`cloud_frac` + rain floor).
+- **Pass 4 (Voronoi Spatial Aggregation)**: Statewide ERCT + 8 ERCOT weather zones: 9 regional features + `mslp_tendency_3h` and uncertainty summaries.
 
 ### B. Strict Causal Filtering Rule (`t_obs <= t_0`) — Default Operational Mode
 For every target hour $t_0$ (`HH:00:00 UTC`) across `2014-01-01T07:00:00Z`–`2026-01-01T06:00:00Z`:
