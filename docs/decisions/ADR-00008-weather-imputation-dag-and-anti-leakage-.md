@@ -36,11 +36,11 @@ Govern the implementation of [`ADR-00003`](ADR-00003-spatiotemporal-kriging-grou
 
 ```mermaid
 flowchart TD
-    P0["Pass 0: Raw CSV Stream -> Clean Irregular Station Store (Single Read of 720 CSVs)<br/>Bounds QC, METAR SLP wrap filter, 12k-ft ceilometer gate, okta encode, algebraic dwpf prefill, dedup"]
-    P1["Pass 1: Frozen In-Sample Calibration (Strictly t <= train_end_utc)<br/>Fit station Fourier harmonics (tmpf, dwpf, alti), global delta_p OLS, variograms, p01i zero_rate"]
-    P2["Pass 2: Primary Hourly Cubes (Rolling 1-Year Windows with Causal -24h Lookback Buffer)<br/>• Group A: tmpf, dwpf, feel_diff -> reconcile dwpf<=tmpf, relh, feel, rolling tmpf_12h<br/>• Group B1: alti<br/>• Group C1: p01i (reset-aligned (H-1:56, H:56] bucket + PNO-safe dry-0 + 2-part KNN)"]
-    P3["Pass 3: Conditioned Auxiliary Cubes (Same 1-Year Window in RAM)<br/>• Group B2: delta_p(elev, tmpf_12h) + 2D AWOS broadcast -> reconstruct mslp & mslp_var<br/>• Group C2: vsby + Group A/C1 dry-air fog guard (tmpf - dwpf > 6°F & p01i == 0)<br/>• Group D: cloud_frac + Group C1 rain-cloud floor (p01i >= 0.05 -> >= 0.75)"]
-    P4["Pass 4: Voronoi Spatial Aggregation (Statewide ERCT + 8 ERCOT Weather Zones)<br/>9 regional/zone features + mslp_tendency_3h + propagated coverage/uncertainty summaries"]
+    P0["Pass 0: Raw CSV Stream -> Clean Store<br/>Single read of 720 CSVs; bounds QC, SLP wrap filter,<br/>12k-ft gate, okta encode, dwpf prefill, dedup"]
+    P1["Pass 1: Frozen In-Sample Calibration<br/>Strictly t <= train_end_utc: Fourier harmonics,<br/>delta_p OLS, variograms, p01i zero_rate"]
+    P2["Pass 2: Primary Hourly Cubes<br/>1-yr windows with causal -24h buffer:<br/>Group A (tmpf, dwpf, feel_diff -> relh, feel, tmpf_12h)<br/>Group B1 (alti) | Group C1 (p01i hurdle)"]
+    P3["Pass 3: Conditioned Auxiliary Cubes<br/>Same 1-yr window in RAM:<br/>Group B2 (delta_p -> mslp) | Group C2 (vsby + fog guard)<br/>Group D (cloud_frac + rain-cloud floor)"]
+    P4["Pass 4: Voronoi Spatial Aggregation<br/>Statewide ERCT + 8 weather zones:<br/>9 features, mslp_tendency_3h, uncertainty summaries"]
 
     P0 --> P1 --> P2 --> P3 --> P4
 ```
