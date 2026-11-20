@@ -105,6 +105,20 @@ def test_clean_asos_frame_averages_conflicting_duplicate_measurements() -> None:
     assert quality["duplicate_numeric_measurements_averaged"] >= 1
 
 
+def test_clean_asos_frame_resolves_duplicate_sky_code_by_report_completeness() -> None:
+    sparse_row = _row(skyc1="VV", p01i=pd.NA, tmpf=pd.NA, dwpf=pd.NA, relh=pd.NA, feel=pd.NA)
+    complete_row = _row(skyc1="CLR")
+    frame = pd.DataFrame([sparse_row, complete_row])
+
+    clean, quality = clean_asos_frame(frame, "tx", "tx_sample.csv")
+
+    assert len(clean) == 1
+    assert clean.loc[0, "skyc1"] == "CLR"
+    assert clean.loc[0, "cloud_frac"] == 0.0
+    assert clean.loc[0, "cloud_frac_provenance"] == WeatherCleanProvenance.DUPLICATE_AGGREGATE
+    assert quality["duplicate_categorical_conflicts_resolved"] == 1
+
+
 def test_build_weather_irregular_clean_isolates_raw_and_reports_contract(tmp_path: Path) -> None:
     raw_dir = tmp_path / "raw"
     source_a = _write_month(raw_dir, "tx", "2024-01", [_row(), _row("AAA", "2024-01-01 01:00")])

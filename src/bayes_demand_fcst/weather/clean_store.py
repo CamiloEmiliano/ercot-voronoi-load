@@ -78,7 +78,17 @@ NUMERIC_OUTPUT_COLUMNS = (
     "delta_p",
     "vsby",
 )
-STATIC_OUTPUT_COLUMNS = ("source_state", "source_file", "skyc1")
+STATIC_OUTPUT_COLUMNS = ("source_state", "source_file")
+DUPLICATE_COMPLETENESS_COLUMNS = (
+    "tmpf",
+    "dwpf",
+    "relh",
+    "feel",
+    "p01i",
+    "mslp",
+    "alti",
+    "vsby",
+)
 QUALITY_KEYS = (
     "non_numeric_values",
     "relh_out_of_bounds",
@@ -97,6 +107,7 @@ QUALITY_KEYS = (
     "duplicate_station_observations",
     "duplicate_rows_collapsed",
     "duplicate_numeric_measurements_averaged",
+    "duplicate_categorical_conflicts_resolved",
 )
 
 
@@ -126,8 +137,9 @@ def _recover_dewpoint_fahrenheit(tmpf: pd.Series, relh: pd.Series) -> pd.Series:
     temperature_c = (tmpf - 32.0) * 5.0 / 9.0
     magnus_a = 17.625
     magnus_b = 243.04
-    gamma = np.log(relh / 100.0) + magnus_a * temperature_c / (magnus_b + temperature_c)
-    dewpoint_c = magnus_b * gamma / (magnus_a - gamma)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        gamma = np.log(relh / 100.0) + magnus_a * temperature_c / (magnus_b + temperature_c)
+        dewpoint_c = magnus_b * gamma / (magnus_a - gamma)
     return (dewpoint_c * 9.0 / 5.0 + 32.0).where(mask).astype("float64")
 
 
@@ -137,6 +149,20 @@ def _consistent_non_null_value(values: pd.Series, column: str) -> Any:
     if len(unique) > 1:
         raise ValueError(f"Conflicting duplicate ASOS field {column}: {list(unique)[:5]}")
     return unique[0] if len(unique) else pd.NA
+
+
+def _select_duplicate_skyc1(values: pd.DataFrame) -> tuple[Any, float]:
+    candidates = values.loc[values["skyc1"].notna()].copy()
+    if candidates.empty:
+        return pd.NA, np.nan
+    candidates["_completeness"] = candidates[list(DUPLICATE_COMPLETENESS_COLUMNS)].notna().sum(axis=1)
+    candidates["_cloud_rank"] = candidates["cloud_frac"].fillna(-1.0)
+    preferred = candidates.sort_values(
+        ["_completeness", "_cloud_rank", "skyc1"],
+        ascending=[False, False, True],
+        kind="stable",
+    ).iloc[0]
+    return preferred["skyc1"], float(preferred["cloud_frac"])
 
 
 def _deduplicate_clean_frame(frame: pd.DataFrame, quality: Counter[str]) -> pd.DataFrame:
@@ -159,11 +185,29 @@ def _deduplicate_clean_frame(frame: pd.DataFrame, quality: Counter[str]) -> pd.D
         differing_numeric += int(grouped[column].nunique(dropna=True).gt(1).sum())
     quality["duplicate_numeric_measurements_averaged"] += differing_numeric
 
+    sky_records: list[dict[str, Any]] = []
+    for key, values in grouped:
+        selected_skyc1, selected_cloud_frac = _select_duplicate_skyc1(values)
+        skyc1_conflict = int(values["skyc1"].nunique(dropna=True) > 1)
+        quality["duplicate_categorical_conflicts_resolved"] += skyc1_conflict
+        key_values = key if isinstance(key, tuple) else (key,)
+        sky_records.append(
+            {
+                **dict(zip(KEY_COLUMNS, key_values, strict=True)),
+                "skyc1": selected_skyc1,
+                "cloud_frac_selected": selected_cloud_frac,
+            }
+        )
+
     static = grouped[list(STATIC_OUTPUT_COLUMNS)].agg(
         lambda values: _consistent_non_null_value(values, str(values.name))
     )
     numeric = grouped[list(NUMERIC_OUTPUT_COLUMNS)].mean()
-    aggregated = static.join(numeric).reset_index()
+    selected_sky = pd.DataFrame(sky_records).set_index(list(KEY_COLUMNS))
+    aggregated = static.join(numeric)
+    aggregated = aggregated.join(selected_sky["skyc1"])
+    aggregated["cloud_frac"] = selected_sky["cloud_frac_selected"]
+    aggregated = aggregated.reset_index()
     for provenance_column, value_column in PROVENANCE_VALUE_COLUMNS.items():
         aggregated[provenance_column] = np.where(
             aggregated[value_column].notna().to_numpy(),

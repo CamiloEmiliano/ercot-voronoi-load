@@ -524,3 +524,66 @@ stages:
       md5: 364be292c339a85b1ae55aed25ee11b6.dir
       size: 9962174
       nfiles: 13
+  build_weather_irregular_clean:
+    cmd: .venv/bin/python scripts/weather/build_weather_irregular_clean.py
+      --overwrite
+    deps:
+    - path: data/raw/weather_ar_asos
+      hash: md5
+      md5: d146f90d2cc9e09f6b7ff736392abe67.dir
+      size: 508898639
+      nfiles: 144
+    - path: data/raw/weather_la_asos
+      hash: md5
+      md5: 3ed27f82795011eaa4302671e6572971.dir
+      size: 614209290
+      nfiles: 144
+    - path: data/raw/weather_nm_asos
+      hash: md5
+      md5: d97fd0cdf03328ea613764bfaf64e4e2.dir
+      size: 556037602
+      nfiles: 144
+    - path: data/raw/weather_ok_asos
+      hash: md5
+      md5: 02023e8ba53d27aedc79fe700d3dc2ca.dir
+      size: 1086165628
+      nfiles: 144
+    - path: data/raw/weather_tx_asos
+      hash: md5
+      md5: 9bdaedfff77f762b89681488fd06a7bc.dir
+      size: 3485142609
+      nfiles: 144
+    - path: scripts/weather/build_weather_irregular_clean.py
+      hash: md5
+      md5: acb0410d170605a26b7f9cd027ced374
+      size: 1358
+    - path: src/bayes_demand_fcst/contracts.py
+      hash: md5
+      md5: 5ba80b1aa6022f6762db3531e75cac3e
+      size: 2863
+    - path: src/bayes_demand_fcst/schema.py
+      hash: md5
+      md5: 7c7fdf51d6b251443bfa83eff4d6b16b
+      size: 2105
+    - path: src/bayes_demand_fcst/weather/__init__.py
+      hash: md5
+      md5: 423f5a7f8d28bbca64540be51e3eb2ea
+      size: 1197
+    - path: src/bayes_demand_fcst/weather/clean_store.py
+      hash: md5
+      md5: 19daf8ffc7e24c38dce66441cfc810f4
+      size: 23504
+    - path: src/bayes_demand_fcst/weather/contracts.py
+      hash: md5
+      md5: c0ef07c69cef127fc821b6f7329a246a
+      size: 3656
+    - path: src/bayes_demand_fcst/weather/provenance.py
+      hash: md5
+      md5: fe38af4f36c961d10d5a905b36c14e48
+      size: 534
+    outs:
+    - path: data/interim/weather_irregular_clean
+      hash: md5
+      md5: 92610d1ccdd4d2d115f4b3c30dbec877.dir
+      size: 909623833
+      nfiles: 721
