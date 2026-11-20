@@ -85,6 +85,20 @@ stages:
     - src/bayes_demand_fcst/weather/provenance.py
     outs:
     - data/interim/weather_irregular_clean
+  build_weather_calibration:
+    cmd: .venv/bin/python scripts/weather/build_weather_calibration.py --train-end-utc 2021-12-31T23:59:59Z --overwrite
+    deps:
+    - data/interim/weather_irregular_clean
+    - scripts/weather/build_weather_calibration.py
+    - src/bayes_demand_fcst/schema.py
+    - src/bayes_demand_fcst/weather/__init__.py
+    - src/bayes_demand_fcst/weather/calibration.py
+    - src/bayes_demand_fcst/weather/calibration_store.py
+    - src/bayes_demand_fcst/weather/causality.py
+    - src/bayes_demand_fcst/weather/contracts.py
+    - src/bayes_demand_fcst/weather/covariance.py
+    outs:
+    - data/interim/weather_calibration
   normalize_asos_weather:
     cmd: mkdir -p data/interim/weather_station_hourly && .venv/bin/python scripts/weather/normalize_asos_weather.py --output data/interim/weather_station_hourly --overwrite
     deps:

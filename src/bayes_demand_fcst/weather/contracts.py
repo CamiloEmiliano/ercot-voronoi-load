@@ -75,5 +75,27 @@ WEATHER_STATION_HOURLY_SCHEMA = DatasetSchema(
     primary_key=("station_id", "timestamp_utc"),
 )
 
+WEATHER_CALIBRATION_HARMONIC_SCHEMA = DatasetSchema(
+    name="weather_calibration_harmonic",
+    version=1,
+    fields=(
+        FieldSchema("station_id", "string", nullable=False),
+        FieldSchema("variable", "string", nullable=False),
+        FieldSchema("train_end_utc", "timestamp[UTC]", nullable=False),
+        FieldSchema("reference_utc", "timestamp[UTC]", nullable=False),
+        FieldSchema("sample_count", "int64", nullable=False),
+        FieldSchema("design_matrix_condition", "float64", nullable=False),
+        FieldSchema("coefficient_00", "float64", nullable=False),
+        FieldSchema("coefficient_01", "float64", nullable=False),
+        FieldSchema("coefficient_02", "float64", nullable=False),
+        FieldSchema("coefficient_03", "float64", nullable=False),
+        FieldSchema("coefficient_04", "float64", nullable=False),
+        FieldSchema("coefficient_05", "float64", nullable=False),
+        FieldSchema("coefficient_06", "float64", nullable=False),
+    ),
+    primary_key=("station_id", "variable"),
+)
+
 weather_irregular_clean_schema = WEATHER_IRREGULAR_CLEAN_SCHEMA
 weather_station_hourly_schema = WEATHER_STATION_HOURLY_SCHEMA
+weather_calibration_harmonic_schema = WEATHER_CALIBRATION_HARMONIC_SCHEMA
