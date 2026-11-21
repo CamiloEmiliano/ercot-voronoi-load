@@ -96,6 +96,36 @@ WEATHER_CALIBRATION_HARMONIC_SCHEMA = DatasetSchema(
     primary_key=("station_id", "variable"),
 )
 
+WEATHER_PRIMARY_HOURLY_SCHEMA = DatasetSchema(
+    name="weather_primary_hourly",
+    version=1,
+    fields=(
+        FieldSchema("station_id", "string", nullable=False),
+        FieldSchema("timestamp_utc", "timestamp[UTC]", nullable=False),
+        FieldSchema("tmpf", "float32"),
+        FieldSchema("dwpf", "float32"),
+        FieldSchema("relh", "float32"),
+        FieldSchema("feel", "float32"),
+        FieldSchema("feel_diff", "float32"),
+        FieldSchema("alti", "float32"),
+        FieldSchema("p01i", "float32"),
+        FieldSchema("tmpf_12h", "float32"),
+        FieldSchema("p01i_wet_probability", "float32"),
+        FieldSchema("tmpf_provenance", "uint8", nullable=False),
+        FieldSchema("dwpf_provenance", "uint8", nullable=False),
+        FieldSchema("feel_diff_provenance", "uint8", nullable=False),
+        FieldSchema("alti_provenance", "uint8", nullable=False),
+        FieldSchema("p01i_provenance", "uint8", nullable=False),
+        FieldSchema("tmpf_kriging_variance", "float32"),
+        FieldSchema("dwpf_kriging_variance", "float32"),
+        FieldSchema("feel_diff_kriging_variance", "float32"),
+        FieldSchema("alti_kriging_variance", "float32"),
+        FieldSchema("tmpf_12h_complete_count", "uint8", nullable=False),
+    ),
+    primary_key=("station_id", "timestamp_utc"),
+)
+
 weather_irregular_clean_schema = WEATHER_IRREGULAR_CLEAN_SCHEMA
 weather_station_hourly_schema = WEATHER_STATION_HOURLY_SCHEMA
 weather_calibration_harmonic_schema = WEATHER_CALIBRATION_HARMONIC_SCHEMA
+weather_primary_hourly_schema = WEATHER_PRIMARY_HOURLY_SCHEMA

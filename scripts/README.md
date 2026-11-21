@@ -4,7 +4,7 @@ CLI entrypoints are grouped by domain under `scripts/<domain>/`. Reusable contra
 
 ## Domain Directory Layout
 
-- `scripts/weather/` — ASOS archive downloads, Pass-0 irregular cleaning, frozen calibration, legacy station-hour normalization, and regional Voronoi aggregation
+- `scripts/weather/` — ASOS archive downloads, Pass-0 irregular cleaning, frozen calibration, causal primary cubes, legacy station-hour normalization, and regional Voronoi aggregation
 - `scripts/spatial/` — ERCOT eGRID boundary extraction, ASOS station metadata, and Voronoi area weights
 - `scripts/fuel_mix/` — Year-specific 15-minute ERCOT fuel-mix normalizers (2014–2025) and hourly UTC aggregator
 - `scripts/load/` — Canonical ERCOT Native Load download/normalization (`ADR-00001`), manual API probe, and legacy backcast scripts
@@ -21,6 +21,7 @@ CLI entrypoints are grouped by domain under `scripts/<domain>/`. Reusable contra
 | `weather` | `scripts/weather/download_asos_weather_tx.py` | Active DVC | Iowa Mesonet ASOS API (`TX`) | `data/raw/weather_tx_asos/` |
 | `weather` | `scripts/weather/build_weather_irregular_clean.py` | Active DVC | `data/raw/weather_*_asos/` | `data/interim/weather_irregular_clean/` |
 | `weather` | `scripts/weather/build_weather_calibration.py` | Active DVC | `data/interim/weather_irregular_clean/` | `data/interim/weather_calibration/` |
+| `weather` | `scripts/weather/build_weather_primary_hourly.py` | Active DVC | clean store, frozen calibration, station metadata | `data/interim/weather_primary_hourly/` |
 | `weather` | `scripts/weather/normalize_asos_weather.py` | Active DVC (legacy) | `data/raw/weather_*_asos/` | `data/interim/weather_station_hourly/` |
 | `weather` | `scripts/weather/aggregate_regional_weather.py` | Active DVC | `data/interim/weather_station_hourly/`, `voronoi_weights.parquet` | `data/interim/weather_regional_hourly/` |
 | `spatial` | `scripts/spatial/extract_ercot_map.py` | Active DVC | `data/raw/ercot_map/eGRID2023_Subregions.shp` | `data/interim/ercot_map/ercot_boundary.geojson` |

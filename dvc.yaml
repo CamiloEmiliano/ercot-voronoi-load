@@ -99,6 +99,27 @@ stages:
     - src/bayes_demand_fcst/weather/covariance.py
     outs:
     - data/interim/weather_calibration
+  build_weather_primary_hourly:
+    cmd: .venv/bin/python scripts/weather/build_weather_primary_hourly.py --mode causal --overwrite
+    deps:
+    - data/interim/weather_irregular_clean
+    - data/interim/weather_calibration
+    - data/interim/station_metadata/station_metadata.parquet
+    - scripts/weather/build_weather_primary_hourly.py
+    - src/bayes_demand_fcst/schema.py
+    - src/bayes_demand_fcst/weather/__init__.py
+    - src/bayes_demand_fcst/weather/calibration.py
+    - src/bayes_demand_fcst/weather/causality.py
+    - src/bayes_demand_fcst/weather/contracts.py
+    - src/bayes_demand_fcst/weather/covariance.py
+    - src/bayes_demand_fcst/weather/interpolation.py
+    - src/bayes_demand_fcst/weather/kriging.py
+    - src/bayes_demand_fcst/weather/neighborhoods.py
+    - src/bayes_demand_fcst/weather/primary.py
+    - src/bayes_demand_fcst/weather/primary_store.py
+    - src/bayes_demand_fcst/weather/space_time.py
+    outs:
+    - data/interim/weather_primary_hourly
   normalize_asos_weather:
     cmd: mkdir -p data/interim/weather_station_hourly && .venv/bin/python scripts/weather/normalize_asos_weather.py --output data/interim/weather_station_hourly --overwrite
     deps:
