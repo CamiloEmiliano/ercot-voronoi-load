@@ -567,16 +567,16 @@ stages:
       size: 2105
     - path: src/bayes_demand_fcst/weather/__init__.py
       hash: md5
-      md5: 423f5a7f8d28bbca64540be51e3eb2ea
-      size: 1197
+      md5: e6a21eb668cb4c58ffaa00f84cb12674
+      size: 2905
     - path: src/bayes_demand_fcst/weather/clean_store.py
       hash: md5
       md5: 19daf8ffc7e24c38dce66441cfc810f4
       size: 23504
     - path: src/bayes_demand_fcst/weather/contracts.py
       hash: md5
-      md5: c0ef07c69cef127fc821b6f7329a246a
-      size: 3656
+      md5: 30c8a4a1c486459fe849bbea45f7b8cf
+      size: 4769
     - path: src/bayes_demand_fcst/weather/provenance.py
       hash: md5
       md5: fe38af4f36c961d10d5a905b36c14e48
@@ -587,3 +587,50 @@ stages:
       md5: 92610d1ccdd4d2d115f4b3c30dbec877.dir
       size: 909623833
       nfiles: 721
+  build_weather_calibration:
+    cmd: .venv/bin/python scripts/weather/build_weather_calibration.py
+      --train-end-utc 2021-12-31T23:59:59Z --overwrite
+    deps:
+    - path: data/interim/weather_irregular_clean
+      hash: md5
+      md5: 92610d1ccdd4d2d115f4b3c30dbec877.dir
+      size: 909623833
+      nfiles: 721
+    - path: scripts/weather/build_weather_calibration.py
+      hash: md5
+      md5: 5c3923d8a7262a3372f537434eab1f23
+      size: 2183
+    - path: src/bayes_demand_fcst/schema.py
+      hash: md5
+      md5: 7c7fdf51d6b251443bfa83eff4d6b16b
+      size: 2105
+    - path: src/bayes_demand_fcst/weather/__init__.py
+      hash: md5
+      md5: e6a21eb668cb4c58ffaa00f84cb12674
+      size: 2905
+    - path: src/bayes_demand_fcst/weather/calibration.py
+      hash: md5
+      md5: 6ccaaa5f45b1adcb1df58d603b095ee4
+      size: 7458
+    - path: src/bayes_demand_fcst/weather/calibration_store.py
+      hash: md5
+      md5: 29859540d86ca99b08aaa62d36bdfc93
+      size: 10852
+    - path: src/bayes_demand_fcst/weather/causality.py
+      hash: md5
+      md5: 79ba26f8ab6f08214b7ea81a42e7a60d
+      size: 4300
+    - path: src/bayes_demand_fcst/weather/contracts.py
+      hash: md5
+      md5: 30c8a4a1c486459fe849bbea45f7b8cf
+      size: 4769
+    - path: src/bayes_demand_fcst/weather/covariance.py
+      hash: md5
+      md5: 62cf5cf2ac6da665da020ab5b4e5ea0c
+      size: 4386
+    outs:
+    - path: data/interim/weather_calibration
+      hash: md5
+      md5: 85b2c05cbc9a65e759ca9e1fd85dc3cf.dir
+      size: 82541
+      nfiles: 3
